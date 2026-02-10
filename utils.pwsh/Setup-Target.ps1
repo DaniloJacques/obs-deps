@@ -91,6 +91,12 @@ function Setup-BuildParameters {
         }
     }
 
+    # Tiger Lake optimizations: AVX-512 + Intel64 tuning (x64 only)
+    if ( $script:Target -eq 'x64' ) {
+        $script:CFlags += @('/arch:AVX512', '/favor:INTEL64')
+        $script:CxxFlags += @('/arch:AVX512', '/favor:INTEL64')
+    }
+
     $script:CmakeOptions = @(
         '-A', $script:ConfigData.CmakeArch
         '-G', $VisualStudioId

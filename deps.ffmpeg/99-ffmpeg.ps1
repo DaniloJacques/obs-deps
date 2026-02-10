@@ -66,8 +66,8 @@ function Configure {
         ('--arch=' + $($TargetArch[$Target]))
         $(if ( $Target -ne $script:HostArchitecture ) { '--enable-cross-compile' })
         '--toolchain=msvc'
-        ('--extra-cflags=' + "'-D_WINDLL -MD -D_WIN32_WINNT=0x0A00" + $(if ( $Target -eq 'arm64' ) { ' -D__ARM_PCS_VFP' }) + "'")
-        ('--extra-cxxflags=' + "'-MD -D_WIN32_WINNT=0x0A00'")
+        ('--extra-cflags=' + "'-D_WINDLL -MD -D_WIN32_WINNT=0x0A00" + $(if ( $Target -eq 'x64' ) { ' /arch:AVX512 /favor:INTEL64' }) + $(if ( $Target -eq 'arm64' ) { ' -D__ARM_PCS_VFP' }) + "'")
+        ('--extra-cxxflags=' + "'-MD -D_WIN32_WINNT=0x0A00" + $(if ( $Target -eq 'x64' ) { ' /arch:AVX512 /favor:INTEL64' }) + "'")
         ('--extra-ldflags=' + "'-APPCONTAINER:NO -MACHINE:${Target}'")
         $(if ( $Target -eq 'arm64' ) { '--as=armasm64.exe','--cpu=armv8' })
         '--pkg-config=pkg-config'

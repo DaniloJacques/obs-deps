@@ -134,12 +134,12 @@ setup_build_parameters() {
     linux*)
       cmake_flags+=(
         -DCMAKE_SYSTEM_PROCESSOR=${target_config[cmake_arch]}
-        -DCMAKE_C_FLAGS="${c_flags} -fPIC"
-        -DCMAKE_CXX_FLAGS="${cxx_flags} -fPIC"
+        -DCMAKE_C_FLAGS="${c_flags} -fPIC -march=tigerlake -mtune=tigerlake"
+        -DCMAKE_CXX_FLAGS="${cxx_flags} -fPIC -march=tigerlake -mtune=tigerlake"
       )
 
-      c_flags+=(-fPIC)
-      cxx_flags+=(-fPIC)
+      c_flags+=(-fPIC -march=tigerlake -mtune=tigerlake)
+      cxx_flags+=(-fPIC -march=tigerlake -mtune=tigerlake)
 
       if (( ${+commands[clang]} )) {
         export CC='clang'
@@ -150,13 +150,13 @@ setup_build_parameters() {
       cmake_flags+=(
         -DCMAKE_SYSTEM_PROCESSOR=${target_config[cmake_arch]}
         -DCMAKE_TOOLCHAIN_FILE=${target_config[toolchain]}
-        -DCMAKE_C_FLAGS="${c_flags} -fno-semantic-interposition"
-        -DCMAKE_CXX_FLAGS="${cxx_flags} -fno-semantic-interposition"
+        -DCMAKE_C_FLAGS="${c_flags} -fno-semantic-interposition -march=tigerlake -mtune=tigerlake"
+        -DCMAKE_CXX_FLAGS="${cxx_flags} -fno-semantic-interposition -march=tigerlake -mtune=tigerlake"
         -DCMAKE_SHARED_LINKER_FLAGS="-static-libgcc"
       )
 
-      c_flags+=(-fno-semantic-interposition)
-      cxx_flags+=(-fno-semantic-interposition)
+      c_flags+=(-fno-semantic-interposition -march=tigerlake -mtune=tigerlake)
+      cxx_flags+=(-fno-semantic-interposition -march=tigerlake -mtune=tigerlake)
       ld_flags+=(-static-libgcc)
       ;;
     *) log_error "Invalid target specified: %F{1}${1}%f"; return 2 ;;
