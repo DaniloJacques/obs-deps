@@ -696,3 +696,89 @@ jobs:
             ${{ github.workspace }}/macos-*-arm64?(-dSYMs).tar.xz
             ${{ github.workspace }}/macos-*-x86_64?(-dSYMs).tar.xz
             ${{ github.workspace }}/macos-*-universal?(-dSYMs).tar.xz
+
+  auto-release:
+    name: Auto Release (Tiger Lake)
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [ffmpeg-windows-build, windows-build, windows-qt6-package]
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Get Metadata
+        id: metadata
+        run: |
+          : Get Metadata
+          echo "version=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Package Windows dependencies
+        run: |
+          : Package Windows dependencies
+          shopt -s extglob
+          shopt -s nullglob
+
+          for arch in x64 x86 arm64; do
+            _temp=$(mktemp -d)
+            pushd "${_temp}" > /dev/null
+
+            for artifact in ${GITHUB_WORKSPACE}/**/windows-@(deps|ffmpeg)-!(qt6*)-${arch}.*; do
+              case ${artifact} in
+                *.zip) unzip -o ${artifact} > /dev/null ;;
+                *.tar.xz) XZ_OPT=-T0 tar -xJf ${artifact} ;;
+                *.tar.gz) tar -xzf ${artifact} ;;
+              esac
+            done
+
+            if [ "$(ls -A .)" ]; then
+              zip -r windows-deps-${{ steps.metadata.outputs.version }}-${arch}.zip -- *
+              mv windows-deps-${{ steps.metadata.outputs.version }}-${arch}.zip ${GITHUB_WORKSPACE}
+            fi
+
+            files=("${GITHUB_WORKSPACE}"/qt6-windows-"${arch}"-!(*-@(Debug|RelWithDebInfo|Release|MinSizeRel))/*.zip)
+            for artifact in "${files[@]}"; do
+              mv "${artifact}" "${GITHUB_WORKSPACE}" 2>/dev/null || true
+            done
+            popd > /dev/null
+          done
+
+      - name: Generate Checksums
+        run: |
+          : Generate Checksums
+          shopt -s extglob
+          echo "### Tiger Lake Optimized Deps" > ${{ github.workspace }}/CHECKSUMS.txt
+          echo "" >> ${{ github.workspace }}/CHECKSUMS.txt
+          echo "Compiler flags:" >> ${{ github.workspace }}/CHECKSUMS.txt
+          echo "- GCC/MinGW: \`-march=tigerlake -mtune=tigerlake\`" >> ${{ github.workspace }}/CHECKSUMS.txt
+          echo "- MSVC: \`/arch:AVX512 /favor:INTEL64\`" >> ${{ github.workspace }}/CHECKSUMS.txt
+          echo "" >> ${{ github.workspace }}/CHECKSUMS.txt
+          echo "### Checksums" >> ${{ github.workspace }}/CHECKSUMS.txt
+          for file in ${{ github.workspace }}/@(*.zip); do
+            echo "    ${file##*/}: $(sha256sum "${file}" | cut -d " " -f 1)" >> ${{ github.workspace }}/CHECKSUMS.txt
+          done
+
+      - name: Delete existing release for today
+        run: |
+          : Delete existing release
+          gh release delete "${{ steps.metadata.outputs.version }}" --yes --repo ${{ github.repository }} 2>/dev/null || true
+          git push origin --delete "refs/tags/${{ steps.metadata.outputs.version }}" 2>/dev/null || true
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564
+        with:
+          draft: false
+          prerelease: false
+          tag_name: ${{ steps.metadata.outputs.version }}
+          name: "Tiger Lake Deps ${{ steps.metadata.outputs.version }}"
+          body_path: ${{ github.workspace }}/CHECKSUMS.txt
+          files: |
+            ${{ github.workspace }}/windows-*-x64*.zip
+            ${{ github.workspace }}/windows-*-arm64*.zip
+            ${{ github.workspace }}/windows-*-x86*.zip
