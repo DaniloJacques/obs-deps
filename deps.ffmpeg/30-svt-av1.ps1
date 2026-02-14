@@ -55,6 +55,7 @@ function Configure {
         '-DBUILD_TESTING:BOOL=OFF'
         '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
         '-DSVT_AV1_LTO:BOOL=ON'
+        '-DENABLE_AVX512:BOOL=ON'
         "-DCMAKE_C_FLAGS=$ClangFlags"
         "-DCMAKE_CXX_FLAGS=$ClangFlags"
     )

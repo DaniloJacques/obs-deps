@@ -39,6 +39,7 @@ config() {
     -DENABLE_NASM=ON
     -DBUILD_TESTING=OFF
     -DSVT_AV1_LTO=ON
+    -DENABLE_AVX512=ON
   )
 
   log_info "Config (%F{3}${target}%f)"
