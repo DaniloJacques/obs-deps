@@ -38,6 +38,7 @@ config() {
     -DBUILD_ENC=ON
     -DENABLE_NASM=ON
     -DBUILD_TESTING=OFF
+    -DSVT_AV1_LTO=ON
   )
 
   log_info "Config (%F{3}${target}%f)"
