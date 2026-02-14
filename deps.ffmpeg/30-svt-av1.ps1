@@ -43,8 +43,10 @@ function Configure {
     Set-Location $Path
 
     $OnOff = @('OFF', 'ON')
+    $ClangFlags = '/clang:-march=tigerlake /clang:-mtune=tigerlake /clang:-O3'
     $Options = @(
         $CmakeOptions
+        '-T', 'ClangCL'
         "-DBUILD_SHARED_LIBS:BOOL=$($OnOff[$script:Shared.isPresent])"
         '-DBUILD_APPS:BOOL=OFF'
         '-DBUILD_DEC:BOOL=ON'
@@ -53,6 +55,8 @@ function Configure {
         '-DBUILD_TESTING:BOOL=OFF'
         '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
         '-DSVT_AV1_LTO:BOOL=ON'
+        "-DCMAKE_C_FLAGS=$ClangFlags"
+        "-DCMAKE_CXX_FLAGS=$ClangFlags"
     )
 
     Invoke-External cmake -S . -B "build_${Target}" @Options
