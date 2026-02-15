@@ -1,4 +1,4 @@
-# obs-deps
+# obs-deps optimized for Tigerlake (YEEEAH, i9 11900H ES, time to shine!)
 
 This repository is a collection of build scripts to build OBS dependencies for macOS and Windows.
 
