@@ -2,9 +2,9 @@ autoload -Uz log_debug log_error log_info log_status log_output
 
 ## Dependency Information
 local name='svt-av1'
-local version='2.3.0'
+local version='4.0.1'
 local url='https://gitlab.com/AOMediaCodec/SVT-AV1.git'
-local hash='6e69def4ec283fe0b71195671245c3b768bebdef'
+local hash='4ae9272b588a05ee6e77a43e8dfdac05f54c4ff0'
 
 ## Dependency Overrides
 local targets=(windows-x64 'linux-*')
