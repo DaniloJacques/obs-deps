@@ -1,3 +1,16 @@
+## Tiger Lake Optimized OBSDeps
+Tiger Lake: Intel mobile 11th Gen Core, like 11900H, with AVX512 instruction set.
+
+## Changed Encoders:
+SVT-AV1 2.3.0 updated to SVT-AV1-HDR updated to 3.1.3.
+
+## Compiler:
+SVT-AV1 compiled by Clang instead MSVC (more performance).
+
+## Compiler flags:
+GCC/MinGW/Clang: -march=tigerlake -mtune=tigerlake
+MSVC: /arch:AVX512 /favor:INTEL64
+
 # obs-deps
 
 This repository is a collection of build scripts to build OBS dependencies for macOS and Windows.
