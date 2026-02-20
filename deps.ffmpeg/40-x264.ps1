@@ -61,6 +61,7 @@ function Configure {
         '--disable-gpac'
         '--disable-interlaced'
         '--disable-cli'
+        '--enable-lto'
         $(if ( $Shared ) { '--enable-shared' })
         $(if ( $Configuration -match '(Debug|RelWithDebInfo)' ) { '--enable-debug' })
     )
@@ -78,9 +79,9 @@ function Configure {
         CXXFLAGS = $env:CXXFLAGS
         MSYS2_PATH_TYPE = $env:MSYS2_PATH_TYPE
     }
-    $env:CC = 'cl'
-    $env:CFLAGS = $($($script:CFlags) + ' -wd4003')
-    $env:CXXFLAGS = $($($script:CxxFlags) + ' -wd4003')
+    $env:CC = 'clang-cl'
+    $env:CFLAGS = $($($script:CFlags) + ' /clang:-march=tigerlake /clang:-mtune=tigerlake /clang:-O3 -wd4003')
+    $env:CXXFLAGS = $($($script:CxxFlags) + ' /clang:-march=tigerlake /clang:-mtune=tigerlake /clang:-O3 -wd4003')
     $env:MSYS2_PATH_TYPE = 'inherit'
     Invoke-DevShell @Params
     $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
