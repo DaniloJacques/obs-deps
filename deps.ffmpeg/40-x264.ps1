@@ -79,7 +79,11 @@ function Configure {
         CXXFLAGS = $env:CXXFLAGS
         MSYS2_PATH_TYPE = $env:MSYS2_PATH_TYPE
     }
-    $env:CC = 'clang-cl'
+    if ( $Target -eq 'x64' ) {
+        $env:CC = 'clang-cl'
+    } else {
+        $env:CC = 'cl'
+    }
     $env:CFLAGS = $($($script:CFlags) + ' -wd4003')
     $env:CXXFLAGS = $($($script:CxxFlags) + ' -wd4003')
     $env:MSYS2_PATH_TYPE = 'inherit'
