@@ -49,6 +49,11 @@ function Configure {
 
     New-Item -ItemType Directory -Force "build_${Target}" > $null
 
+    $ConfigurePath = Join-Path $Path 'configure'
+    $ConfigureText = Get-Content $ConfigurePath -Raw
+    $ConfigureText = $ConfigureText.Replace('"$cc_base" = cl || "$cc_base" = cl[\ .]*', '"$cc_base" = cl || "$cc_base" = cl[\ .]* || "$cc_base" = clang-cl')
+    Set-Content -Path $ConfigurePath -Value $ConfigureText -NoNewline
+
     $ConfigureCommand = @(
         'bash'
         '../configure'
