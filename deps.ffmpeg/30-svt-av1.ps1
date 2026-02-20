@@ -38,7 +38,7 @@ function Configure {
     Set-Location $Path
 
     $OnOff = @('OFF', 'ON')
-    $ClangFlags = '/clang:-march=tigerlake /clang:-mtune=tigerlake /clang:-O3'
+    $ClangFlags = '/clang:-march=tigerlake /clang:-mtune=tigerlake /clang:-O3 /clang:-mno-avx /clang:-mavx2 /clang:-mavx512f /clang:-mavx512bw /clang:-mavx512dq'
     $Options = @(
         $CmakeOptions
         '-T', 'ClangCL'
