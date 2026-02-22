@@ -8,6 +8,10 @@ inputs:
     description: Build type (shared or static libraries)
     required: false
     default: static
+  profile:
+    description: Hardware profile tuning (e.g. zen3, tigerlake)
+    required: false
+    default: ""
   config:
     description: Build configuration
     required: false
@@ -51,7 +55,7 @@ runs:
           !${{ inputs.workingDirectory }}/*_build_temp/*.tar.gz
           !${{ inputs.workingDirectory }}/*_build_temp/*.tar.xz
           !${{ inputs.workingDirectory }}/*_build_temp/*.zip
-        key: ${{ inputs.target }}-deps-${{ inputs.type }}-${{ inputs.config }}-${{ steps.env-setup.outputs.hash }}
+        key: ${{ inputs.target }}-${{ inputs.profile }}-deps-${{ inputs.type }}-${{ inputs.config }}-${{ steps.env-setup.outputs.hash }}
 
     - name: Build and Install Dependencies
       if: runner.os == 'macOS'
@@ -82,6 +86,9 @@ runs:
           SkipBuild = $(if ( '${{ steps.deps-cache.outputs.cache-hit }}' -eq 'true' ) { $true } else { $false })
           SkipUnpack = $(if ( '${{ steps.deps-cache.outputs.cache-hit }}' -eq 'true' ) { $true } else { $false })
         }
+        if ('${{ inputs.profile }}') {
+          $Params['Profile'] = '${{ inputs.profile }}'
+        }
 
         ./Build-Dependencies.ps1 @Params
 
@@ -95,4 +102,4 @@ runs:
           !${{ inputs.workingDirectory }}/*_build_temp/*.tar.gz
           !${{ inputs.workingDirectory }}/*_build_temp/*.tar.xz
           !${{ inputs.workingDirectory }}/*_build_temp/*.zip
-        key: ${{ inputs.target }}-deps-${{ inputs.type }}-${{ inputs.config }}-${{ steps.env-setup.outputs.hash }}
+        key: ${{ inputs.target }}-${{ inputs.profile }}-deps-${{ inputs.type }}-${{ inputs.config }}-${{ steps.env-setup.outputs.hash }}

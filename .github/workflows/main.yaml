@@ -151,12 +151,17 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        target: [x64, arm64]
+        target: [x64]
+        profile: [tigerlake, zen3]
+        config: [Release]
+        type: [static]
         include:
           - target: x64
+            profile: ''
             config: Release
             type: static
           - target: arm64
+            profile: ''
             config: Release
             type: static
     defaults:
@@ -172,8 +177,9 @@ jobs:
           # Setup Environment
 
           $Target='${{ matrix.target }}'
-          $ArtifactName="ffmpeg-windows-${Target}-${{ needs.pre-checks.outputs.shortHash }}"
-          $FileName="windows-ffmpeg-$(Get-Date -Format 'yyyy-MM-dd')-${Target}.zip"
+          $ProfileSuffix = if ( '${{ matrix.profile }}' ) { "-${{ matrix.profile }}" } else { "" }
+          $ArtifactName="ffmpeg-windows-${Target}${ProfileSuffix}-${{ needs.pre-checks.outputs.shortHash }}"
+          $FileName="windows-ffmpeg-$(Get-Date -Format 'yyyy-MM-dd')-${Target}${ProfileSuffix}.zip"
 
           "artifactName=${ArtifactName}" >> $env:GITHUB_OUTPUT
           "artifactFileName=${FileName}" >> $env:GITHUB_OUTPUT
@@ -182,6 +188,7 @@ jobs:
         uses: ./.github/actions/build-ffmpeg
         with:
           target: ${{ matrix.target }}
+          profile: ${{ matrix.profile }}
           type: ${{ matrix.type }}
           config: ${{ matrix.config }}
 
@@ -446,15 +453,21 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        target: [x64, x86, arm64]
+        target: [x64]
+        profile: [tigerlake, zen3]
+        config: [Release]
+        type: [static]
         include:
           - target: x64
+            profile: ''
             config: Release
             type: static
           - target: x86
+            profile: ''
             config: Release
             type: static
           - target: arm64
+            profile: ''
             config: Release
             type: static
     defaults:
@@ -470,8 +483,9 @@ jobs:
           # Setup Environment
 
           $Target='${{ matrix.target }}'
-          $ArtifactName="deps-windows-${Target}-${{ needs.pre-checks.outputs.shortHash }}"
-          $FileName="windows-deps-$(Get-Date -Format 'yyyy-MM-dd')-${Target}.zip"
+          $ProfileSuffix = if ( '${{ matrix.profile }}' ) { "-${{ matrix.profile }}" } else { "" }
+          $ArtifactName="deps-windows-${Target}${ProfileSuffix}-${{ needs.pre-checks.outputs.shortHash }}"
+          $FileName="windows-deps-$(Get-Date -Format 'yyyy-MM-dd')-${Target}${ProfileSuffix}.zip"
 
           "artifactName=${ArtifactName}" >> $env:GITHUB_OUTPUT
           "artifactFileName=${FileName}" >> $env:GITHUB_OUTPUT
@@ -525,6 +539,7 @@ jobs:
         uses: ./.github/actions/build-deps
         with:
           target: ${{ matrix.target }}
+          profile: ${{ matrix.profile }}
           type: ${{ matrix.type }}
           config: ${{ matrix.config }}
 
@@ -622,7 +637,14 @@ jobs:
           shopt -s extglob
           shopt -s nullglob
 
-          for arch in x64 x86 arm64; do
+          for arch in x64-tigerlake x64-zen3 x64 x86 arm64; do
+            target_search_string=${arch}
+            if [[ "$arch" == *"x64-"* ]]; then
+               # To package qt correctly during the combined package
+               qt_search_arch="x64"
+            else
+               qt_search_arch=${arch}
+            fi
             _temp=$(mktemp -d)
             pushd "${_temp}" > /dev/null
 
@@ -637,7 +659,7 @@ jobs:
             zip -r windows-deps-${{ steps.metadata.outputs.version }}-${arch}.zip -- *
             mv windows-deps-${{ steps.metadata.outputs.version }}-${arch}.zip ${GITHUB_WORKSPACE}
 
-            files=("${GITHUB_WORKSPACE}"/qt6-windows-"${arch}"-!(*-@(Debug|RelWithDebInfo|Release|MinSizeRel))/*.zip)
+            files=("${GITHUB_WORKSPACE}"/qt6-windows-"${qt_search_arch}"-!(*-@(Debug|RelWithDebInfo|Release|MinSizeRel))/*.zip)
             for artifact in "${files[@]}"; do
               mv "${artifact}" "${GITHUB_WORKSPACE}"
             done
@@ -723,7 +745,12 @@ jobs:
           shopt -s extglob
           shopt -s nullglob
 
-          for arch in x64 x86 arm64; do
+          for arch in x64-tigerlake x64-zen3 x64 x86 arm64; do
+            if [[ "$arch" == *"x64-"* ]]; then
+               qt_search_arch="x64"
+            else
+               qt_search_arch=${arch}
+            fi
             _temp=$(mktemp -d)
             pushd "${_temp}" > /dev/null
 
@@ -740,7 +767,7 @@ jobs:
               mv windows-deps-${{ steps.metadata.outputs.version }}-${arch}.zip ${GITHUB_WORKSPACE}
             fi
 
-            files=("${GITHUB_WORKSPACE}"/qt6-windows-"${arch}"-!(*-@(Debug|RelWithDebInfo|Release|MinSizeRel))/*.zip)
+            files=("${GITHUB_WORKSPACE}"/qt6-windows-"${qt_search_arch}"-!(*-@(Debug|RelWithDebInfo|Release|MinSizeRel))/*.zip)
             for artifact in "${files[@]}"; do
               mv "${artifact}" "${GITHUB_WORKSPACE}" 2>/dev/null || true
             done

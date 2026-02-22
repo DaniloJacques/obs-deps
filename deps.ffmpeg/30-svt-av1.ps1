@@ -38,7 +38,8 @@ function Configure {
     Set-Location $Path
 
     $OnOff = @('OFF', 'ON')
-    $ClangFlags = '/clang:-march=tigerlake /clang:-mtune=tigerlake /clang:-O3 /clang:-mno-avx /clang:-mavx2 /clang:-mavx512f /clang:-mavx512bw /clang:-mavx512dq'
+    $ClangTargetString = if ($script:ClangTargetFlags) { ($script:ClangTargetFlags -split ' ' | ForEach-Object { "/clang:$_" }) -join ' ' } else { '' }
+    $ClangFlags = "/clang:-O3 $ClangTargetString".Trim()
     $Options = @(
         $CmakeOptions
         '-T', 'ClangCL'

@@ -91,10 +91,26 @@ function Setup-BuildParameters {
         }
     }
 
-    # Tiger Lake optimizations: AVX-512 + Intel64 tuning (x64 only)
+    # Architecture tuning optimizations (x64 only)
+    $script:ClangTargetFlags = ''
     if ( $script:Target -eq 'x64' ) {
-        $script:CFlags += @('/arch:AVX512', '/favor:INTEL64')
-        $script:CxxFlags += @('/arch:AVX512', '/favor:INTEL64')
+        switch ( $script:Profile ) {
+            'tigerlake' {
+                $script:CFlags += @('/arch:AVX512', '/favor:INTEL64')
+                $script:CxxFlags += @('/arch:AVX512', '/favor:INTEL64')
+                $script:ClangTargetFlags = '-march=tigerlake -mtune=tigerlake -mno-avx -mavx2 -mavx512f -mavx512bw -mavx512dq'
+            }
+            'zen3' {
+                $script:CFlags += @('/arch:AVX2', '/favor:AMD64')
+                $script:CxxFlags += @('/arch:AVX2', '/favor:AMD64')
+                $script:ClangTargetFlags = '-march=znver3 -mtune=znver3'
+            }
+            default { # 'x86-64-v3' or missing
+                $script:CFlags += @('/arch:AVX2')
+                $script:CxxFlags += @('/arch:AVX2')
+                $script:ClangTargetFlags = '-march=x86-64-v3 -mtune=generic'
+            }
+        }
     }
 
     $script:CmakeOptions = @(
