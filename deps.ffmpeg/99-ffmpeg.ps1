@@ -15,7 +15,7 @@ param(
         }
         @{
             PatchFile = "${PSScriptRoot}/patches/FFmpeg/0003-libsvtav1-fix-v4-api-compat.patch"
-            HashSum = "502047019b84d124fb32b6eac44a1c4fa9c1b65d2923979f08d632faac250543"
+            HashSum = "d0cb352db6246e429c9fc1c6609b8291ef2b5ddc5f7e557e91375a259a22bf55"
         }
     )
 )
