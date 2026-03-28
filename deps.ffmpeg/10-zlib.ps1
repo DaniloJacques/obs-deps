@@ -1,8 +1,8 @@
 param(
     [string] $Name = 'zlib',
-    [string] $Version = '1.3.1',
+    [string] $Version = '1.3.2',
     [string] $Uri = 'https://github.com/madler/zlib.git',
-    [string] $Hash = "51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf",
+    [string] $Hash = "f9dd6009be3ed32415edf1e89d1bc38380ecb95d",
     [array] $Patches = @(
         @{
             PatchFile = "${PSScriptRoot}/patches/zlib/0001-fix-unistd-detection.patch"
@@ -32,10 +32,6 @@ function Patch {
         $Params = $_
         Safe-Patch @Params
     }
-
-    $cml = Get-Content "CMakeLists.txt" -Raw
-    $cml = $cml -replace 'set\(ZLIB_SRCS \$\{ZLIB_SRCS\} win32/zlib1\.rc\)', ''
-    Set-Content "CMakeLists.txt" $cml -NoNewline
 }
 
 function Configure {
