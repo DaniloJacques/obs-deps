@@ -32,6 +32,10 @@ function Patch {
         $Params = $_
         Safe-Patch @Params
     }
+
+    $cml = Get-Content "CMakeLists.txt" -Raw
+    $cml = $cml -replace 'set\(ZLIB_SRCS \$\{ZLIB_SRCS\} win32/zlib1\.rc\)', ''
+    Set-Content "CMakeLists.txt" $cml -NoNewline
 }
 
 function Configure {
