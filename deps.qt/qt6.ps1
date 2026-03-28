@@ -136,7 +136,7 @@ function Configure {
         arm64 = 'arm64'
     }
 
-    $Options = ($Options -join ' ') -replace '-G Visual Studio \d+ \d+','-G Ninja' -replace "-A $($CMakeTarget[$Target])",''
+    $Options = ($Options -join ' ') -replace '-G Visual Studio \d+ \d+','-G Ninja' -replace "-A $($CMakeTarget[$Target])",'' -replace '-T ClangCL',''
 
     Log-Information "Configure qtbase (${Target})"
 
@@ -150,9 +150,13 @@ function Configure {
     $Backup = @{
         PATH = $env:PATH
         VCPKG_ROOT = $env:VCPKG_ROOT
+        CC = $env:CC
+        CXX = $env:CXX
     }
     $env:PATH = "$(Resolve-Path ((Get-Command git).Source + '/../../usr/bin') | Convert-Path);$env:PATH"
     $env:VCPKG_ROOT = ''
+    $env:CC = "clang-cl"
+    $env:CXX = "clang-cl"
     Invoke-DevShell @Params
     $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
 }
@@ -257,7 +261,7 @@ function Qt-Add-Submodules {
             }
         }
 
-        $ComponentOptions = ($ComponentOptions -join ' ') -replace '-G Visual Studio \d+ \d+','-G Ninja' -replace "-A $($CMakeTarget[$Target])",''
+        $ComponentOptions = ($ComponentOptions -join ' ') -replace '-G Visual Studio \d+ \d+','-G Ninja' -replace "-A $($CMakeTarget[$Target])",'' -replace '-T ClangCL',''
 
         Log-Information "Configure ${Component} (${Target})"
 
@@ -271,9 +275,13 @@ function Qt-Add-Submodules {
         $Backup = @{
             PATH = $env:PATH
             VCPKG_ROOT = $env:VCPKG_ROOT
+            CC = $env:CC
+            CXX = $env:CXX
         }
         $env:PATH = "$(Resolve-Path ((Get-Command git).Source + '/../../usr/bin') | Convert-Path);$env:PATH"
         $env:VCPKG_ROOT = ''
+        $env:CC = "clang-cl"
+        $env:CXX = "clang-cl"
         Invoke-DevShell @Params
         $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "Env:\$($_.Key)" -Value $_.Value }
 
