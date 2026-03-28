@@ -3,12 +3,6 @@ param(
     [string] $Version = '1.3.2',
     [string] $Uri = 'https://github.com/madler/zlib.git',
     [string] $Hash = "f9dd6009be3ed32415edf1e89d1bc38380ecb95d",
-    [array] $Patches = @(
-        @{
-            PatchFile = "${PSScriptRoot}/patches/zlib/0001-fix-unistd-detection.patch"
-            HashSum = "2114ff9ebfc79765019353b06915a09f4dc4802ce722d2df6e640a59666dd875"
-        }
-    ),
     [array] $Targets = @('x64', 'arm64')
 )
 
@@ -21,16 +15,6 @@ function Clean {
     if ( Test-Path "build_${Target}" ) {
         Log-Information "Clean build directory (${Target})"
         Remove-Item -Path "build_${Target}" -Recurse -Force
-    }
-}
-
-function Patch {
-    Log-Information "Patch (${Target})"
-    Set-Location $Path
-
-    $Patches | ForEach-Object {
-        $Params = $_
-        Safe-Patch @Params
     }
 }
 
