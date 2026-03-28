@@ -91,6 +91,9 @@ function Setup-BuildParameters {
         }
     }
 
+    $env:CC = 'clang'
+    $env:CXX = 'clang++'
+
     $script:CmakeOptions = @(
         '-A', $script:ConfigData.CmakeArch
         '-G', $VisualStudioId
