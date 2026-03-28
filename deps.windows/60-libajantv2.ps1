@@ -8,7 +8,7 @@ param(
     [array] $Patches = @(
         @{
             PatchFile = "${PSScriptRoot}/patches/ajantv2/0001-fix-clang-udiv128.patch"
-            HashSum = '9eda2a83171fea730614f2b77805d5dbaef3e91e405b2d7d6729ecb4a18354d6'
+            HashSum = 'D0DA84B7EADA0042215C5943CE8C9E2E2CB8F3582DCB0BB4B16892B4C03697DC'
         }
     )
 )
