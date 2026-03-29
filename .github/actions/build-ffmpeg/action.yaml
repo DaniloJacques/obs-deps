@@ -39,6 +39,7 @@ runs:
         echo "hash=${ffmpeg_dep_hash:0:9}" >> $GITHUB_OUTPUT
 
     - name: Restore FFmpeg Dependencies from Cache
+      if: false
       id: ffmpeg-deps-cache
       uses: actions/cache/restore@v4
       with:
@@ -76,6 +77,7 @@ runs:
         ./Build-Dependencies.ps1 @BuildArgs
 
     - name: Restore FFmpeg from Cache
+      if: false
       id: ffmpeg-cache
       uses: actions/cache/restore@v4
       with:
@@ -126,7 +128,7 @@ runs:
           **/*_build_temp/**/ffbuild/config.log
 
     - name: Save FFmpeg to Cache
-      if: github.event_name == 'schedule' || (github.event_name == 'push' && steps.ffmpeg-cache.outputs.cache-hit != 'true')
+      if: false
       uses: actions/cache/save@v4
       with:
         path: |
@@ -135,7 +137,7 @@ runs:
         key: ${{ inputs.target }}-ffmpeg-${{ inputs.type }}-${{ inputs.config }}-${{ steps.env-setup.outputs.hash }}
 
     - name: Save FFmpeg Dependencies to Cache
-      if: github.event_name == 'schedule' || (github.event_name == 'push' && steps.ffmpeg-deps-cache.outputs.cache-hit != 'true')
+      if: false
       uses: actions/cache/save@v4
       with:
         path: |
