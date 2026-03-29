@@ -64,6 +64,7 @@ function Configure {
         '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
         "-DCMAKE_C_COMPILER=clang-cl"
         "-DCMAKE_CXX_COMPILER=clang-cl"
+        "-DCMAKE_SHARED_LINKER_FLAGS=delayimp.lib"
     )
 
     Invoke-External cmake -S . -B "build_${Target}" @Options
