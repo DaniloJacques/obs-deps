@@ -83,9 +83,11 @@ function Setup-BuildParameters {
 
     $ClangPath = Get-Command clang.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
     if ($ClangPath) {
-        $script:LlvmBin = [System.IO.Path]::GetDirectoryName($ClangPath).Replace('\', '/')
+        $LlvmBinLong = [System.IO.Path]::GetDirectoryName($ClangPath)
+        $Fso = New-Object -ComObject Scripting.FileSystemObject
+        $script:LlvmBin = $Fso.GetFolder($LlvmBinLong).ShortPath.Replace('\', '/')
     } else {
-        $script:LlvmBin = 'C:/Program Files/LLVM/bin'
+        $script:LlvmBin = 'C:/PROGRA~1/LLVM/bin'
     }
 
     $script:CmakeOptions = @(
