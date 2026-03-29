@@ -103,3 +103,17 @@ function Install {
 
     Invoke-External cmake @Options
 }
+
+function Fixup {
+    Log-Information "Fixup (${Target})"
+    Set-Location "${Name}-${Version}"
+
+    $PkgConfigPath = "$($script:ConfigData.OutputPath)/lib/pkgconfig"
+    if ( Test-Path $PkgConfigPath ) {
+        Get-ChildItem -Path $PkgConfigPath -Filter *.pc | ForEach-Object {
+            $content = Get-Content $_.FullName -Raw
+            $content = $content -replace '(?i)\bws2_32\.lib\b', '-lws2_32'
+            Set-Content -Path $_.FullName -Value $content -NoNewline
+        }
+    }
+}
