@@ -79,7 +79,7 @@ function Configure {
         MSYS2_PATH_TYPE = $env:MSYS2_PATH_TYPE
     }
     $clangTarget = if ($Target -eq 'arm64') { 'aarch64-pc-windows-msvc' } elseif ($Target -eq 'x86') { 'i686-pc-windows-msvc' } else { 'x86_64-pc-windows-msvc' }
-    $env:CC = "clang --target=$clangTarget"
+    $env:CC = "clang-cl --target=$clangTarget"
     $env:CFLAGS = $($($script:CFlags) + ' -wd4003')
     $env:CXXFLAGS = $($($script:CxxFlags) + ' -wd4003')
     $env:MSYS2_PATH_TYPE = 'inherit'
