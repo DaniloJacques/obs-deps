@@ -53,6 +53,7 @@ runs:
         echo "patchHash=${qt_patch_hash:0:9}" >> $GITHUB_OUTPUT
 
     - name: Restore Qt from Cache
+      if: false
       id: deps-cache
       uses: actions/cache/restore@v4
       with:
@@ -99,7 +100,7 @@ runs:
         ./Build-Dependencies.ps1 @Params
 
     - name: Save Qt to Cache
-      if: github.event_name == 'schedule' || (github.event_name == 'push' && steps.deps-cache.outputs.cache-hit != 'true')
+      if: false
       uses: actions/cache/save@v4
       with:
         path: |
