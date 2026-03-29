@@ -64,3 +64,13 @@ function Install {
 
     Invoke-External cmake @Options
 }
+
+function Fixup {
+    Log-Information "Fixup (${Target})"
+    Set-Location $Path
+
+    $LibPath = "$($script:ConfigData.OutputPath)/lib"
+    if ( Test-Path "$LibPath/zs.lib" ) {
+        Move-Item -Path "$LibPath/zs.lib" -Destination "$LibPath/zlib.lib" -Force
+    }
+}

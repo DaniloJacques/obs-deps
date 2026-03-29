@@ -24,6 +24,18 @@ function Clean {
     }
 }
 
+function Patch {
+    Log-Information "Patch (${Target})"
+    Set-Location "${Name}-${Version}"
+
+    $VcxprojGen = "build/make/gen_msvs_vcxproj.sh"
+    if ( Test-Path $VcxprojGen ) {
+        $Content = Get-Content $VcxprojGen -Raw
+        $Content = $Content -replace 'tag_content WholeProgramOptimization true', 'tag_content WholeProgramOptimization false'
+        $Content | Set-Content $VcxprojGen -NoNewline
+    }
+}
+
 function Configure {
     Log-Information "Configure (${Target})"
     Set-Location "${Name}-${Version}"
