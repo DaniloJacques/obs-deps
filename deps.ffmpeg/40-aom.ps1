@@ -1,6 +1,6 @@
 param(
     [string] $Name = 'aom',
-    [string] $Version = '3.13.2',
+    [string] $Version = '3.13.2-git',
     [string] $Uri = 'https://aomedia.googlesource.com/aom.git',
     [string] $Hash = 'dc0b27cfbc498aa8ecb2fd23c46b2b734314f3ea',
     [array] $Targets = @('x64', 'arm64'),

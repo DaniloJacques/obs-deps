@@ -1,6 +1,6 @@
 param(
     [string] $Name = 'ntv2',
-    [string] $Version = '17.6.0',
+    [string] $Version = '17.6.0-git',
     [string] $Uri = 'https://github.com/aja-video/libajantv2.git',
     [string] $Hash = '2d7636d86b6180bb4c5075fea040b1b812cc8b57',
     [array] $Targets = @('x64'),
@@ -61,9 +61,14 @@ function Configure {
         '-DAJA_INSTALL_CMAKE:BOOL=OFF'
     )
 
+    $Backup = @{
+        CC = $env:CC
+        CXX = $env:CXX
+    }
     $env:CC = "clang"
     $env:CXX = "clang++"
     Invoke-External cmake -S . -B "build_${Target}" @Options
+    $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
 }
 
 function Build {
@@ -79,9 +84,14 @@ function Build {
         $Options += '--verbose'
     }
 
+    $Backup = @{
+        CC = $env:CC
+        CXX = $env:CXX
+    }
     $env:CC = "clang"
     $env:CXX = "clang++"
     Invoke-External cmake @Options
+    $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
 }
 
 function Install {
