@@ -46,6 +46,10 @@ function Build {
         arm64 = 'arm64'
     }
 
+    $mk = Get-Content "Makefile.MSVC" -Raw
+    $mk = $mk -replace '/O2b2ity', '/O2' -replace '/GAy', '' -replace '/Gs1024', '' -replace '/Zp8', ''
+    Set-Content "Makefile.MSVC" $mk -NoNewline
+
     $clangTarget = if ($Target -eq 'arm64') { 'aarch64-pc-windows-msvc' } elseif ($Target -eq 'x86') { 'i686-pc-windows-msvc' } else { 'x86_64-pc-windows-msvc' }
     $Params = @{
         BasePath = (Get-Location | Convert-Path)
