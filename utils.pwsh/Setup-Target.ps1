@@ -88,6 +88,10 @@ function Setup-BuildParameters {
         "-DCMAKE_C_COMPILER_TARGET=$($ClangTargets[$script:Target])"
         "-DCMAKE_CXX_COMPILER_TARGET=$($ClangTargets[$script:Target])"
         '-DCMAKE_RC_COMPILER=llvm-rc'
+        '-DCMAKE_MT=llvm-mt'
+        '-DCMAKE_LINKER=lld-link'
+        '-DCMAKE_AR=llvm-lib'
+        '-DCMAKE_RANLIB=echo'
         "-DCMAKE_INSTALL_PREFIX=$($script:ConfigData.OutputPath)"
         "-DCMAKE_PREFIX_PATH=$($script:ConfigData.OutputPath)"
         "-DCMAKE_IGNORE_PREFIX_PATH=C:\Strawberry\c"
