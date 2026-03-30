@@ -81,12 +81,10 @@ function Configure {
 
     $Backup = @{
         MSYS2_PATH_TYPE = $env:MSYS2_PATH_TYPE
-        AR = $env:AR
     }
     $env:MSYS2_PATH_TYPE = 'inherit'
-    $env:AR = 'llvm-ar'
     Invoke-DevShell @Params
-    $Backup.GetEnumerator() | ForEach-Object { if ($null -ne $_.Value) { Set-Item -Path "env:\$($_.Key)" -Value $_.Value } else { Remove-Item "env:\$($_.Key)" -ErrorAction Ignore } }
+    $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
 }
 
 function Build {
@@ -103,13 +101,11 @@ function Build {
     $Backup = @{
         MSYS2_PATH_TYPE = $env:MSYS2_PATH_TYPE
         VERBOSE = $env:VERBOSE
-        AR = $env:AR
     }
     $env:MSYS2_PATH_TYPE = 'inherit'
     $env:VERBOSE = $(if ( $VerbosePreference -eq 'Continue' ) { '1' })
-    $env:AR = 'llvm-ar'
     Invoke-DevShell @Params
-    $Backup.GetEnumerator() | ForEach-Object { if ($null -ne $_.Value) { Set-Item -Path "env:\$($_.Key)" -Value $_.Value } else { Remove-Item "env:\$($_.Key)" -ErrorAction Ignore } }
+    $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
 }
 
 function Install {
@@ -126,13 +122,11 @@ function Install {
     $Backup = @{
         MSYS2_PATH_TYPE = $env:MSYS2_PATH_TYPE
         VERBOSE = $env:VERBOSE
-        AR = $env:AR
     }
     $env:MSYS2_PATH_TYPE = 'inherit'
     $env:VERBOSE = $(if ( $VerbosePreference -eq 'Continue' ) { '1' })
-    $env:AR = 'llvm-ar'
     Invoke-DevShell @Params
-    $Backup.GetEnumerator() | ForEach-Object { if ($null -ne $_.Value) { Set-Item -Path "env:\$($_.Key)" -Value $_.Value } else { Remove-Item "env:\$($_.Key)" -ErrorAction Ignore } }
+    $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
 }
 
 function Fixup {
