@@ -2,9 +2,9 @@ autoload -Uz log_debug log_error log_info log_status log_output
 
 ## Dependency Information
 local name='mbedtls'
-local version='63d1f7f6efd9be95cb7ae36b0cd20a02d9ce8980'
-local url='https://github.com/Mbed-TLS/mbedtls.git'
-local hash='63d1f7f6efd9be95cb7ae36b0cd20a02d9ce8980'
+local version='4.0.0'
+local url='https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-4.0.0/mbedtls-4.0.0.tar.bz2'
+local hash='2f3a47f7b3a541ddef450e4867eeecb7ce2ef7776093f3a11d6d43ead6bf2827'
 local -a patches=()
 
 ## Dependency Overrides
@@ -59,7 +59,7 @@ config() {
     -DUSE_STATIC_MBEDTLS_LIBRARY=ON
     -DENABLE_PROGRAMS=OFF
     -DENABLE_TESTING=OFF
-    -DGEN_FILES=ON
+    -DGEN_FILES=OFF
   )
 
   if [[ ${config} == Release ]] args=(${args//-DCMAKE_C_FLAGS=/-DCMAKE_C_FLAGS=-g })

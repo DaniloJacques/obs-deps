@@ -1,8 +1,8 @@
 param(
     [string] $Name = 'mbedtls',
-    [string] $Version = '63d1f7f6efd9be95cb7ae36b0cd20a02d9ce8980',
-    [string] $Uri = 'https://github.com/Mbed-TLS/mbedtls.git',
-    [string] $Hash = '63d1f7f6efd9be95cb7ae36b0cd20a02d9ce8980',
+    [string] $Version = '4.0.0',
+    [string] $Uri = 'https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-4.0.0/mbedtls-4.0.0.tar.bz2',
+    [string] $Hash = '2f3a47f7b3a541ddef450e4867eeecb7ce2ef7776093f3a11d6d43ead6bf2827',
     [array] $Targets = @('x64', 'arm64'),
     [array] $Patches = @(
         @{
@@ -53,7 +53,7 @@ function Configure {
         "-DUSE_STATIC_MBEDTLS_LIBRARY:BOOL=$($OnOff[$Shared -ne $true])"
         '-DENABLE_PROGRAMS:BOOL=OFF'
         '-DENABLE_TESTING:BOOL=OFF'
-        '-DGEN_FILES:BOOL=ON'
+        '-DGEN_FILES:BOOL=OFF'
         "-DCMAKE_C_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
         "-DCMAKE_CXX_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
     )
