@@ -2,7 +2,7 @@ autoload -Uz log_debug log_error log_info log_status log_output
 
 ## Dependency Information
 local name='zlib'
-local version='1.3.2'
+local version='f9dd6009be3ed32415edf1e89d1bc38380ecb95d'
 local url='https://github.com/madler/zlib.git'
 local hash='f9dd6009be3ed32415edf1e89d1bc38380ecb95d'
 

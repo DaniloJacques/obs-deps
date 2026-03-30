@@ -1,6 +1,6 @@
 param(
     [string] $Name = 'zlib',
-    [string] $Version = '1.3.2-git',
+    [string] $Version = 'f9dd6009be3ed32415edf1e89d1bc38380ecb95d',
     [string] $Uri = 'https://github.com/madler/zlib.git',
     [string] $Hash = "f9dd6009be3ed32415edf1e89d1bc38380ecb95d",
     [array] $Targets = @('x64', 'arm64')

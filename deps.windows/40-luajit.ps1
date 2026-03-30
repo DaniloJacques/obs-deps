@@ -1,8 +1,8 @@
 param(
     [string] $Name = 'luajit',
-    [string] $Version = '2.1',
+    [string] $Version = 'fbb36bb6bfa88716a47c58bcf9ce9f2ef752abac',
     [string] $Uri = 'https://github.com/luajit/luajit.git',
-    [string] $Hash = 'a4f56a459a588ae768801074b46ba0adcfb49eb1',
+    [string] $Hash = 'fbb36bb6bfa88716a47c58bcf9ce9f2ef752abac',
     [array] $Targets = @('x64', 'arm64')
 )
 
@@ -13,9 +13,6 @@ function Setup {
 function Build {
     Log-Information "Build (${Target})"
     Set-Location $Path
-
-    $msvcbuild = Get-Content "src/msvcbuild.bat" -Raw
-    Set-Content "src/msvcbuild.bat" $msvcbuild -NoNewline
 
     $Params = @{
         BasePath = (Get-Location | Convert-Path)

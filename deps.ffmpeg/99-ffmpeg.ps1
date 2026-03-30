@@ -1,6 +1,6 @@
 param(
     [string] $Name = 'FFmpeg',
-    [string] $Version = '8.1-git',
+    [string] $Version = 'e249dfce721629b5870e8d17318eaefeeff07b70',
     [string] $Uri = 'https://github.com/FFmpeg/FFmpeg.git',
     [string] $Hash = "e249dfce721629b5870e8d17318eaefeeff07b70",
     [array] $Targets = @('x64', 'arm64'),

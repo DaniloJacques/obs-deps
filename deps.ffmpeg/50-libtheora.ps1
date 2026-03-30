@@ -1,8 +1,8 @@
 param(
     [string] $Name = 'libtheora',
-    [string] $Version = '1.1.1',
-    [string] $Uri = 'https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.1.1.zip',
-    [string] $Hash = "${PSScriptRoot}/checksums/libtheora-1.1.1.zip.sha256",
+    [string] $Version = 'edfba372beb02ff70a1e2797d8cf561c242d0e0b',
+    [string] $Uri = 'https://github.com/xiph/theora.git',
+    [string] $Hash = "edfba372beb02ff70a1e2797d8cf561c242d0e0b",
     [array] $Targets = @('x64', 'arm64'),
     [array] $Patches = @(
         @{

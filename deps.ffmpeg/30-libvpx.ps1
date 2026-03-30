@@ -1,13 +1,13 @@
 param(
     [string] $Name = 'libvpx',
-    [string] $Version = '1.14.1',
-    [string] $Uri = 'https://github.com/webmproject/libvpx/archive/refs/tags/v1.14.1.zip',
-    [string] $Hash = "${PSScriptRoot}/checksums/v1.14.1.zip.sha256",
+    [string] $Version = '15dca2fe657ea80f929bc99cf6edba333a110322',
+    [string] $Uri = 'https://github.com/webmproject/libvpx.git',
+    [string] $Hash = '15dca2fe657ea80f929bc99cf6edba333a110322',
     [array] $Targets = @('x64', 'arm64')
 )
 
 function Setup {
-    Setup-Dependency -Uri $Uri -Hash $Hash -DestinationPath "."
+    Setup-Dependency -Uri $Uri -Hash $Hash -DestinationPath "${Name}-${Version}"
 
     if ( ! ( $SkipAll -or $SkipDeps ) ) {
         Invoke-External pacman.exe -S --noconfirm --needed --noprogressbar nasm

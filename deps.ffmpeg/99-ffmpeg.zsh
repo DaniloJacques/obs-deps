@@ -2,7 +2,7 @@ autoload -Uz log_debug log_error log_info log_status log_output
 
 ## Dependency Information
 local name='FFmpeg'
-local version='8.1'
+local version='e249dfce721629b5870e8d17318eaefeeff07b70'
 local url='https://github.com/FFmpeg/FFmpeg.git'
 local hash='e249dfce721629b5870e8d17318eaefeeff07b70'
 local -a patches=(

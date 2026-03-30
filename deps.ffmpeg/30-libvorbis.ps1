@@ -1,8 +1,8 @@
 param(
     [string] $Name = 'libvorbis',
-    [string] $Version = '1.3.7',
+    [string] $Version = '8de7001691d9177e30ff16a98b37b1e6fd15f7af',
     [string] $Uri = 'https://gitlab.xiph.org/xiph/vorbis.git',
-    [string] $Hash = "2eac96b03ff67953354cb0a649c08aa3a23267ef",
+    [string] $Hash = "8de7001691d9177e30ff16a98b37b1e6fd15f7af",
     [array] $Targets = @('x64', 'arm64')
 )
 

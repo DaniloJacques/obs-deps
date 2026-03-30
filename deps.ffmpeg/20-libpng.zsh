@@ -2,9 +2,9 @@ autoload -Uz log_debug log_error log_info log_status log_output
 
 ## Dependency Information
 local name='libpng'
-local version='1.6.47'
-local url='https://downloads.sourceforge.net/project/libpng/libpng16/1.6.47/libpng-1.6.47.tar.xz'
-local hash="${0:a:h}/checksums/libpng-1.6.47.tar.xz.sha256"
+local version='ef378794235277f3116860c2fa0d356659b05441'
+local url='https://github.com/pnggroup/libpng.git'
+local hash="ef378794235277f3116860c2fa0d356659b05441"
 local -a patches=(
   "macos ${0:a:h}/patches/libpng/0001-fix-cmake-architecture-handling.patch \
   65667ae3bac56def291a6ad581f272fc77e801e5b429dfdd7de72ffe59449048"
