@@ -4,12 +4,7 @@ param(
     [string] $Uri = 'https://github.com/pnggroup/libpng.git',
     [string] $Hash = "ef378794235277f3116860c2fa0d356659b05441",
     [array] $Targets = @('x64', 'arm64'),
-    [array] $Patches = @(
-        @{
-            PatchFile = "${PSScriptRoot}/patches/libpng/0001-fix-cmake-architecture-handling-windows.patch"
-            HashSum = "56370373d490dd71ee641ca5b4b54b7cc5bb147ef07f21300a1172162fe8c468"
-        }
-    )
+    [array] $Patches = @()
 )
 
 function Setup {
@@ -46,12 +41,6 @@ function Configure {
         "-DPNG_SHARED:BOOL=$($OnOff[$script:Shared.isPresent])"
     )
 
-    if ( $Target -eq 'arm64' ) {
-        $Options += @(
-            '-DCMAKE_ASM_FLAGS="-DPNG_ARM_NEON_IMPLEMENTATION=1'
-            '-DPNG_ARM_NEON=on'
-        )
-    }
 
     if ( $Configuration -eq 'Debug' ) {
         $Options += '-DPNG_DEBUG:BOOL=ON'
