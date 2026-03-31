@@ -16,11 +16,11 @@ param(
         },
         @{
             PatchFile = "${PSScriptRoot}/patches/ajantv2/0003-fix-getdeviceinfolist-scoping.patch"
-            HashSum = '598986BB6D1D5C2B94C2E022DF988CC4DEB3BF1FDFACC9487D4D146B48C8021A'
+            HashSum = '5E21BCF3D960D469679271F5FEF6CB1445BA3819FB2E5E9CF7A4BBDCFB6B5DFE'
         },
         @{
             PatchFile = "${PSScriptRoot}/patches/ajantv2/0004-export-mbedtls-libs.patch"
-            HashSum = '965D2DE1A8A8956829D8363E2A5D3559004FA034D422FB08DF0391E6AABDB105'
+            HashSum = '4073B345B818D424C2DD5F2ABC02438B0DE383EF925123275C6271D6AB57FF38'
         }
     )
 )
