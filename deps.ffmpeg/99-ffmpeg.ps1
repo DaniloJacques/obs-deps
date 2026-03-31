@@ -45,6 +45,7 @@ function Patch {
     $configure = Get-Content configure -Raw
     $configure = $configure -replace 'if test "\$cc_type" = "clang"; then', 'if true; then'
     $configure = $configure -replace 'test "\$cc_type" != "\$ld_type" && die "LTO requires same compiler and linker"', 'true'
+    $configure = $configure -replace "SLIB_CREATE_DEF_CMD='LDFLAGS", "SLIB_CREATE_DEF_CMD='AR=""`$(AR_CMD)"" NM=""`$(NM_CMD)"" LDFLAGS"
     Set-Content -Path configure -Value $configure -NoNewline
 }
 
