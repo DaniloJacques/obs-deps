@@ -109,14 +109,13 @@ jobs:
           print "ccacheDate=${date_string}" >> $GITHUB_OUTPUT
 
       - name: Restore Compilation Cache
-        if: false
         id: ccache-cache
         uses: actions/cache/restore@v5
         with:
           path: ${{ github.workspace }}/.ccache
-          key: ${{ matrix.target }}-ccache-ffmpeg-${{ steps.setup.outputs.ccacheDate }}
+          key: v2-${{ matrix.target }}-ccache-ffmpeg-${{ steps.setup.outputs.ccacheDate }}
           restore-keys: |
-            ${{ matrix.target }}-ccache-ffmpeg-
+            v2-${{ matrix.target }}-ccache-ffmpeg-
 
       - name: Build FFmpeg
         uses: ./.github/actions/build-ffmpeg
@@ -140,11 +139,11 @@ jobs:
           path: ${{ github.workspace }}/${{ matrix.target }}/${{ steps.setup.outputs.dsymArtifactFileName }}
 
       - name: Save Compilation Cache
-        if: false
+        if: github.event_name == 'push'
         uses: actions/cache/save@v5
         with:
           path: ${{ github.workspace }}/.ccache
-          key: ${{ matrix.target }}-ccache-ffmpeg-${{ steps.setup.outputs.ccacheDate }}
+          key: v2-${{ matrix.target }}-ccache-ffmpeg-${{ steps.setup.outputs.ccacheDate }}
 
   ffmpeg-windows-build:
     name: Build FFmpeg for Windows
@@ -272,14 +271,13 @@ jobs:
           echo "ccacheDate=${date_string}" >> $GITHUB_OUTPUT
 
       - name: Restore Compilation Cache
-        if: false
         id: ccache-cache
         uses: actions/cache/restore@v5
         with:
           path: ${{ github.workspace }}/.ccache
-          key: ${{ matrix.target }}-ccache-deps-${{ steps.setup.outputs.ccacheDate }}
+          key: v2-${{ matrix.target }}-ccache-deps-${{ steps.setup.outputs.ccacheDate }}
           restore-keys: |
-            ${{ matrix.target }}-ccache-deps-
+            v2-${{ matrix.target }}-ccache-deps-
 
       - name: Build macOS Dependencies
         uses: ./.github/actions/build-deps
@@ -303,11 +301,11 @@ jobs:
           path: ${{ github.workspace }}/${{ matrix.target }}/${{ steps.setup.outputs.dsymArtifactFileName }}
 
       - name: Save Compilation Cache
-        if: false
+        if: github.event_name == 'push' && steps.ccache-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: ${{ github.workspace }}/.ccache
-          key: ${{ matrix.target }}-ccache-deps-${{ steps.setup.outputs.ccacheDate }}
+          key: v2-${{ matrix.target }}-ccache-deps-${{ steps.setup.outputs.ccacheDate }}
 
   macos-package-universal:
     name: Build macOS Dependencies (Universal)
@@ -374,14 +372,13 @@ jobs:
           print "ccacheDate=${date_string}" >> $GITHUB_OUTPUT
 
       - name: Restore Compilation Cache
-        if: false
         id: ccache-cache
         uses: actions/cache/restore@v5
         with:
           path: ${{ github.workspace }}/.ccache
-          key: macos-universal-ccache-qt6-${{ steps.setup.outputs.ccacheDate }}
+          key: v2-macos-universal-ccache-qt6-${{ steps.setup.outputs.ccacheDate }}
           restore-keys: |
-            macos-universal-ccache-qt6-
+            v2-macos-universal-ccache-qt6-
 
       - name: Build macOS Qt6
         uses: ./.github/actions/build-qt
@@ -404,11 +401,11 @@ jobs:
           path: ${{ github.workspace }}/macos-universal/${{ steps.setup.outputs.dsymArtifactFileName }}
 
       - name: Save Compilation Cache
-        if: false
+        if: github.event_name == 'push' && steps.ccache-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: ${{ github.workspace }}/.ccache
-          key: macos-universal-ccache-qt6-${{ steps.setup.outputs.ccacheDate }}
+          key: v2-macos-universal-ccache-qt6-${{ steps.setup.outputs.ccacheDate }}
 
   macos-qt6-package:
     name: Create macOS Qt6 (${{ matrix.target }})
