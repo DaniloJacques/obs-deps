@@ -9,6 +9,10 @@ param(
         @{
             PatchFile = "${PSScriptRoot}/patches/ajantv2/0001-fix-clang-udiv128.patch"
             HashSum = '1e4571a214081b7a369037c6c4b97f435029cdee8282c05c2d112e581b93b758'
+        },
+        @{
+            PatchFile = "${PSScriptRoot}/patches/ajantv2/0002-install-m31-headers.patch"
+            HashSum = 'D77DCCB550A1E9C1522ABEAD997C479065ECCCD251393BFF5CBF3B7BA6E222CB'
         }
     )
 )
