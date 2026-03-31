@@ -108,6 +108,7 @@ config() {
     --disable-gpac
     --disable-interlaced
     --disable-lavf
+    --enable-lto
   )
 
   if (( shared_libs )) args+=(--enable-shared)

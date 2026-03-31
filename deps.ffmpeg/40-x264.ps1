@@ -61,6 +61,7 @@ function Configure {
         '--disable-gpac'
         '--disable-interlaced'
         '--disable-cli'
+        '--enable-lto'
         $(if ( $Shared ) { '--enable-shared' })
         $(if ( $Configuration -match '(Debug|RelWithDebInfo)' ) { '--enable-debug' })
     )
