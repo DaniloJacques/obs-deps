@@ -1,5 +1,5 @@
---- ajantv2/CMakeLists.txt
-+++ ajantv2/CMakeLists.txt
+--- a/ajantv2/CMakeLists.txt
++++ b/ajantv2/CMakeLists.txt
 @@ -808,5 +808,4 @@
  
 -     target_link_libraries(${PROJECT_NAME} PRIVATE ${MBEDTLS_LINK_LIBS})

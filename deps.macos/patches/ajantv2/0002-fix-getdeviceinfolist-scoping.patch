@@ -1,5 +1,5 @@
---- ajantv2/src/ntv2devicescanner.cpp
-+++ ajantv2/src/ntv2devicescanner.cpp
+--- a/ajantv2/src/ntv2devicescanner.cpp
++++ b/ajantv2/src/ntv2devicescanner.cpp
 @@ -94,7 +94,7 @@
  		}
  	#endif	//	!defined(NTV2_DEPRECATE_16_3)

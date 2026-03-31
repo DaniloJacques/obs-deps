@@ -9,9 +9,9 @@ local -a patches=(
   "* ${0:a:h}/patches/ajantv2/0001-install-m31-headers.patch \
     d77dccb550a1e9c1522abead997c479065ecccd251393bff5cbf3b7ba6e222cb"
   "* ${0:a:h}/patches/ajantv2/0002-fix-getdeviceinfolist-scoping.patch \
-    e8f3b5b21c7d04b3ce738b5ec703d6931a153bb31b62aeaed31d5ddb65514363"
+    598986bb6d1d5c2b94c2e022df988cc4deb3bf1fdfacc9487d4d146b48c8021a"
   "* ${0:a:h}/patches/ajantv2/0003-export-mbedtls-libs.patch \
-    ed7249170ad978de7ca663339a3a06fdb9d4899f02bb6cc2f8ceffd6baddd1a8"
+    965d2de1a8a8956829d8363e2a5d3559004fa034d422fb08df0391e6aabdb105"
 )
 
 ## Dependency Overrides
