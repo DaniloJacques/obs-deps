@@ -14,7 +14,6 @@ param(
 
 function Setup {
     Setup-Dependency -Uri $Uri -Hash $Hash -DestinationPath .
-    Invoke-External tar -xf "${Name}-${Version}.tar"
 }
 
 function Clean {
