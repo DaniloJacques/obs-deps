@@ -108,7 +108,7 @@ function Install {
 
 function Fixup {
     Log-Information "Fixup (${Target})"
-    Set-Location "${Name}-${Version}"
+    Set-Location $Path
 
     $PkgConfigPath = "$($script:ConfigData.OutputPath)/lib/pkgconfig"
     if ( Test-Path $PkgConfigPath ) {
