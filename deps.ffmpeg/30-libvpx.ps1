@@ -10,9 +10,7 @@ function Setup {
     Setup-Dependency -Uri $Uri -Hash $Hash -DestinationPath "${Name}-${Version}"
 
     if ( ! ( $SkipAll -or $SkipDeps ) ) {
-        Invoke-External pacman.exe -S --noconfirm --needed --noprogressbar nasm
-        Invoke-External pacman.exe -S --noconfirm --needed --noprogressbar make
-        Invoke-External pacman.exe -S --noconfirm --needed --noprogressbar diffutils
+        Invoke-External pacman.exe -S --noconfirm --needed --noprogressbar nasm make diffutils
     }
 }
 
