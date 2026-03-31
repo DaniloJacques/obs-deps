@@ -72,7 +72,7 @@ function Configure {
         $clangTarget = if ($Target -eq 'arm64') { 'aarch64-pc-windows-msvc' } elseif ($Target -eq 'x86') { 'i686-pc-windows-msvc' } else { 'x86_64-pc-windows-msvc' }
         ('--cc="C:/PROGRA~1/LLVM/bin/clang-cl.exe --target=' + $clangTarget + '"')
         ('--cxx="C:/PROGRA~1/LLVM/bin/clang-cl.exe --target=' + $clangTarget + '"')
-        ('--extra-cflags=' + "'-D_WINDLL -MD -D_WIN32_WINNT=0x0A00 -flto=thin /clang:-O3" + $(if ( $Target -eq 'arm64' ) { ' -D__ARM_PCS_VFP' }) + "'")
+        ('--extra-cflags=' + "'-D_WINDLL -MD -D_WIN32_WINNT=0x0A00" + $(if ( $Target -eq 'arm64' ) { ' -D__ARM_PCS_VFP' }) + "'")
         ('--extra-cxxflags=' + "'-MD -D_WIN32_WINNT=0x0A00'")
         ('--extra-ldflags=' + "'-APPCONTAINER:NO -MACHINE:${Target}'")
         "--ar=C:/PROGRA~1/LLVM/bin/llvm-ar.exe"
