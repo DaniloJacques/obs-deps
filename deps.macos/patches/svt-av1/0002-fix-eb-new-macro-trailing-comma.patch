@@ -1,0 +1,12 @@
+--- Source/Lib/Codec/object.h
++++ Source/Lib/Codec/object.h
+@@ -62,3 +62,3 @@
+         if (pobj) {
+-            err = ctor(pobj EB_VA_ARGS(__VA_ARGS__));
++            err = ctor(pobj, ##__VA_ARGS__);
+             if (err != EB_ErrorNone)
+@@ -74,3 +74,3 @@
+         EB_CALLOC(pobj, 1, size);
+-        err = ctor(pobj EB_VA_ARGS(__VA_ARGS__));
++        err = ctor(pobj, ##__VA_ARGS__);
+         if (err != EB_ErrorNone) {
