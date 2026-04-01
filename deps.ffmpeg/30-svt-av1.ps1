@@ -4,7 +4,12 @@ param(
     [string] $Uri = 'https://gitlab.com/AOMediaCodec/SVT-AV1.git',
     [string] $Hash = 'f8b6146e6209a3a2c58b87395e950260efb92140',
     [array] $Targets = @('x64'),
-    [array] $Patches = @()
+    [array] $Patches = @(
+        @{
+            PatchFile = "$PSScriptRoot/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch"
+            HashSum = "D212F9BA5266793892F3201A2E67D290CC32AF1815914C4ADA5CB64A1F3B8275"
+        }
+    )
 )
 
 function Setup {

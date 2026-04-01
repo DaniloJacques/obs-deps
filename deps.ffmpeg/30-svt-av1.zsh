@@ -6,13 +6,36 @@ local version='f8b6146e6209a3a2c58b87395e950260efb92140'
 local url='https://gitlab.com/AOMediaCodec/SVT-AV1.git'
 local hash='f8b6146e6209a3a2c58b87395e950260efb92140'
 
+local -a patches=(
+  "macos ${SCRIPT_HOME}/deps.macos/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch D212F9BA5266793892F3201A2E67D290CC32AF1815914C4ADA5CB64A1F3B8275"
+  "linux ${SCRIPT_HOME}/deps.ffmpeg/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch D212F9BA5266793892F3201A2E67D290CC32AF1815914C4ADA5CB64A1F3B8275"
+  "windows ${SCRIPT_HOME}/deps.ffmpeg/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch D212F9BA5266793892F3201A2E67D290CC32AF1815914C4ADA5CB64A1F3B8275"
+)
+
 ## Dependency Overrides
-local targets=(windows-x64 'linux-*')
+local targets=(windows-x64 'macos-*' 'linux-*')
 
 ## Build Steps
 setup() {
   log_info "Setup (%F{3}${target}%f)"
   setup_dep ${url} ${hash}
+}
+
+patch() {
+  autoload -Uz apply_patch
+
+  log_info "Patch (%F{3}${target}%f)"
+  cd ${dir}
+
+  local patch
+  local _target
+  local _url
+  local _hash
+  for patch (${patches}) {
+    read _target _url _hash <<< "${patch}"
+
+    if [[ ${_target} == ${target%%-*} ]] apply_patch ${_url} ${_hash}
+  }
 }
 
 clean() {
