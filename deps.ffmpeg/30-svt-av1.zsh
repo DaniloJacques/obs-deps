@@ -90,35 +90,40 @@ fixup() {
   case ${target} {
     macos*)
       if (( shared_libs )) {
-        local -a dylib_files=(${target_config[output_dir]}/lib/libsvtav1*.dylib(.))
+        local -a dylib_files=( (#i)${target_config[output_dir]}/lib/*svtav1*.dylib(N.) )
 
-        autoload -Uz fix_rpaths && fix_rpaths ${dylib_files}
+        if (( #dylib_files )) {
+          autoload -Uz fix_rpaths && fix_rpaths ${dylib_files}
 
-        if [[ ${config} == Release ]] dsymutil ${dylib_files}
-        strip_tool=strip
-        strip_files=(${dylib_files})
+          if [[ ${config} == Release ]] dsymutil ${dylib_files}
+          strip_tool=strip
+          strip_files=(${dylib_files})
+        }
       } else {
-        rm -rf ${target_config[output_dir]}/lib/libsvtav1*.(dylib|dSYM)(N)
+        rm -rf (#i)${target_config[output_dir]}/lib/*svtav1*.(dylib|dSYM)(N)
       }
       ;;
     linux-*)
       if (( shared_libs )) {
         strip_tool=strip
-        strip_files=(${target_config[output_dir]}/lib/libsvtav1.so.*(.))
+        strip_files=( (#i)${target_config[output_dir]}/lib/*svtav1*.so.*(N.) )
       } else {
-        rm -rf ${target_config[output_dir]}/lib/libsvtav1.so.*(N)
+        rm -rf (#i)${target_config[output_dir]}/lib/*svtav1*.so.*(N)
       }
       ;;
     windows-x*)
       if (( shared_libs )) {
-        mv (#i)"${target_config[output_dir]}"/lib/libsvtav1*.dll ${target_config[output_dir]}/bin/
-        autoload -Uz create_importlibs
-        create_importlibs (#i)${target_config[output_dir]}/bin/libsvtav1*.dll
+        local -a dlls=( (#i)${target_config[output_dir]}/lib/*svtav1*.dll(N) )
+        if (( #dlls )) {
+          mv ${dlls} ${target_config[output_dir]}/bin/
+          autoload -Uz create_importlibs
+          create_importlibs ${target_config[output_dir]}/bin/(#i)*svtav1*.dll
+        }
 
         strip_tool=${target_config[cross_prefix]}-w64-mingw32-strip
-        strip_files=(${target_config[output_dir]}/bin/libsvtav1*.dll(.))
+        strip_files=( (#i)${target_config[output_dir]}/bin/*svtav1*.dll(N.) )
       } else {
-        rm -rf ${target_config[output_dir]}/bin/libsvtav1*.dll(N)
+        rm -rf (#i)${target_config[output_dir]}/bin/*svtav1*.dll(N)
       }
       ;;
   }
