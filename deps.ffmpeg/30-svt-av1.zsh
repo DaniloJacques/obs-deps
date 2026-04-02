@@ -2,9 +2,9 @@ autoload -Uz log_debug log_error log_info log_status log_output
 
 ## Dependency Information
 local name='svt-av1'
-local version='f8b6146e6209a3a2c58b87395e950260efb92140'
-local url='https://gitlab.com/AOMediaCodec/SVT-AV1.git'
-local hash='f8b6146e6209a3a2c58b87395e950260efb92140'
+local version='2510aeafa208f7dfbb172463ca93e8b5ef1ae75c'
+local url='https://gitlab.com/BlueSwordM/SVT-AV1.git'
+local hash='2510aeafa208f7dfbb172463ca93e8b5ef1ae75c'
 
 local -a patches=(
   "macos ${SCRIPT_HOME}/deps.macos/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch f899afbbfe5c3330e4f8b64249b434b2f2be3c84ea70ce0002c858891b1c6473"
