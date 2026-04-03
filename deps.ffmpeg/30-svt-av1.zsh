@@ -7,11 +7,11 @@ local url='https://gitlab.com/BlueSwordM/SVT-AV1.git'
 local hash='2510aeafa208f7dfbb172463ca93e8b5ef1ae75c'
 
 local -a patches=(
-  "macos ${SCRIPT_HOME}/deps.macos/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch f899afbbfe5c3330e4f8b64249b434b2f2be3c84ea70ce0002c858891b1c6473"
+  "macos ${SCRIPT_HOME}/deps.macos/patches/svt-av1/0001-fix-preset-8-and-higher.patch 6c0708218c75e88b4557460f06dba998fc5eaf75fbff767c8799227f1f4cbf68"
   "macos ${SCRIPT_HOME}/deps.macos/patches/svt-av1/0002-fix-eb-new-macro-trailing-comma.patch 2d21d229ce7d61c4db08edbdc85ea30d50908525d31743a3bce59660c0381a10"
-  "linux ${SCRIPT_HOME}/deps.ffmpeg/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch f899afbbfe5c3330e4f8b64249b434b2f2be3c84ea70ce0002c858891b1c6473"
+  "linux ${SCRIPT_HOME}/deps.ffmpeg/patches/svt-av1/0001-fix-preset-8-and-higher.patch 6c0708218c75e88b4557460f06dba998fc5eaf75fbff767c8799227f1f4cbf68"
   "linux ${SCRIPT_HOME}/deps.ffmpeg/patches/svt-av1/0002-fix-eb-new-macro-trailing-comma.patch 2d21d229ce7d61c4db08edbdc85ea30d50908525d31743a3bce59660c0381a10"
-  "windows ${SCRIPT_HOME}/deps.ffmpeg/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch f899afbbfe5c3330e4f8b64249b434b2f2be3c84ea70ce0002c858891b1c6473"
+  "windows ${SCRIPT_HOME}/deps.ffmpeg/patches/svt-av1/0001-fix-preset-8-and-higher.patch 6c0708218c75e88b4557460f06dba998fc5eaf75fbff767c8799227f1f4cbf68"
   "windows ${SCRIPT_HOME}/deps.ffmpeg/patches/svt-av1/0002-fix-eb-new-macro-trailing-comma.patch 2d21d229ce7d61c4db08edbdc85ea30d50908525d31743a3bce59660c0381a10"
 )
 

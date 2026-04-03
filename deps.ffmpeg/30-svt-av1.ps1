@@ -6,8 +6,8 @@ param(
     [array] $Targets = @('x64'),
     [array] $Patches = @(
         @{
-            PatchFile = "$PSScriptRoot/patches/svt-av1/0001-rtc-disable-lpd1-skip-inter-tx.patch"
-            HashSum = "f899afbbfe5c3330e4f8b64249b434b2f2be3c84ea70ce0002c858891b1c6473"
+            PatchFile = "$PSScriptRoot/patches/svt-av1/0001-fix-preset-8-and-higher.patch"
+            HashSum = "6c0708218c75e88b4557460f06dba998fc5eaf75fbff767c8799227f1f4cbf68"
         }
     )
 )
