@@ -46,8 +46,6 @@ function Configure {
         '-DENABLE_PROGRAMS:BOOL=OFF'
         '-DENABLE_TESTING:BOOL=OFF'
         '-DGEN_FILES:BOOL=OFF'
-        "-DCMAKE_C_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
-        "-DCMAKE_CXX_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
     )
 
     Invoke-External cmake -S . -B "build_${Target}" @Options

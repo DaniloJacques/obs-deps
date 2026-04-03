@@ -39,8 +39,6 @@ function Configure {
         '-DNO_TESTS:BOOL=ON'
         '-DNO_EXAMPLES:BOOL=ON'
         '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
-        "-DCMAKE_C_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
-        "-DCMAKE_CXX_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
         "-DCMAKE_C_FLAGS=-w /EHsc"
         "-DCMAKE_CXX_FLAGS=-w /EHsc"
     )

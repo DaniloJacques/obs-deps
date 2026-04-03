@@ -83,8 +83,8 @@ function Setup-BuildParameters {
 
     $script:CmakeOptions = @(
         '-G', 'Ninja'
-        "-DCMAKE_C_COMPILER=C:/PROGRA~1/LLVM/bin/clang.exe"
-        "-DCMAKE_CXX_COMPILER=C:/PROGRA~1/LLVM/bin/clang++.exe"
+        "-DCMAKE_C_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
+        "-DCMAKE_CXX_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
         "-DCMAKE_C_COMPILER_TARGET=$($ClangTargets[$script:Target])"
         "-DCMAKE_CXX_COMPILER_TARGET=$($ClangTargets[$script:Target])"
         "-DCMAKE_INSTALL_PREFIX=$($script:ConfigData.OutputPath)"
