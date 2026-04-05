@@ -7,7 +7,7 @@ param(
     [array] $Patches = @(
         @{
             PatchFile = "${PSScriptRoot}/patches/svt-av1/0001-fix-preset-8-and-higher.patch"
-            HashSum = "6c0708218c75e88b4557460f06dba998fc5eaf75fbff767c8799227f1f4cbf68"
+            HashSum = "44e5d81cef540b9cd6daaed71a117724b6ec6143fa37bd62872a922a8bcd09c7"
         }
     )
 )
