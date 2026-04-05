@@ -49,6 +49,14 @@ function Patch {
         $Params = $_
         Safe-Patch @Params
     }
+
+    # Patch configure to support Clang-CL + ThinLTO on Windows
+    $configure = Get-Content configure -Raw
+    $configure = $configure -replace 'if test "\$cc_type" = "clang"; then', 'if true; then'
+    $configure = $configure -replace 'test "\$cc_type" != "\$ld_type" && die "LTO requires same compiler and linker"', 'true'
+    $configure = $configure -replace 'mingw32\|win32\)', 'mingw32|win32|win64|arm64)'
+    $configure = $configure -replace "SLIB_CREATE_DEF_CMD='LDFLAGS", "SLIB_CREATE_DEF_CMD='AR=""`$(AR_CMD)"" NM=""`$(NM_CMD)"" LDFLAGS"
+    Set-Content -Path configure -Value $configure -NoNewline
 }
 
 function Configure {
@@ -63,6 +71,8 @@ function Configure {
 
     New-Item -ItemType Directory -Force "build_${Target}" > $null
 
+    $clangTarget = if ($Target -eq 'arm64') { 'aarch64-pc-windows-msvc' } elseif ($Target -eq 'x86') { 'i686-pc-windows-msvc' } else { 'x86_64-pc-windows-msvc' }
+
     $ConfigureCommand = @(
         'bash'
         '../configure'
@@ -70,12 +80,18 @@ function Configure {
         ('--arch=' + $($TargetArch[$Target]))
         $(if ( $Target -ne $script:HostArchitecture ) { '--enable-cross-compile' })
         '--toolchain=msvc'
+        ('--cc="C:/PROGRA~1/LLVM/bin/clang-cl.exe --target=' + $clangTarget + '"')
+        ('--cxx="C:/PROGRA~1/LLVM/bin/clang-cl.exe --target=' + $clangTarget + '"')
         ('--extra-cflags=' + "'-D_WINDLL -MD -D_WIN32_WINNT=0x0A00" + $(if ( $Target -eq 'x64' ) { ' /arch:AVX2' }) + $(if ( $Target -eq 'arm64' ) { ' -D__ARM_PCS_VFP' }) + "'")
         ('--extra-cxxflags=' + "'-MD -D_WIN32_WINNT=0x0A00" + $(if ( $Target -eq 'x64' ) { ' /arch:AVX2' }) + "'")
         ('--extra-ldflags=' + "'-APPCONTAINER:NO -MACHINE:${Target}'")
+        "--ar=C:/PROGRA~1/LLVM/bin/llvm-ar.exe"
+        "--nm=C:/PROGRA~1/LLVM/bin/llvm-nm.exe"
+        "--ld=C:/PROGRA~1/LLVM/bin/lld-link.exe"
         $(if ( $Target -eq 'arm64' ) { '--as=armasm64.exe','--cpu=armv8' })
         '--pkg-config=pkg-config'
         $(if ( $Target -ne 'x86' ) { '--target-os=win64' } else { '--target-os=win32' })
+        '--enable-lto=thin'
         $(if ( $Target -eq 'x64' ) { '--enable-libaom' })
         $(if ( $Target -eq 'x64' ) { '--enable-libsvtav1' })
         '--enable-libtheora'
@@ -109,6 +125,8 @@ function Configure {
     }
 
     $Backup = @{
+        CC = $env:CC
+        CXX = $env:CXX
         CFLAGS = $env:CFLAGS
         CXXFLAGS = $env:CXXFLAGS
         PKG_CONFIG_LIBDIR = $env:PKG_CONFIG_LIBDIR
@@ -116,16 +134,19 @@ function Configure {
         MSYS2_PATH_TYPE = $env:MSYS2_PATH_TYPE
         PATH = $env:PATH
     }
+    $env:CC = "C:/PROGRA~1/LLVM/bin/clang-cl.exe --target=$clangTarget"
+    $env:CXX = "C:/PROGRA~1/LLVM/bin/clang-cl.exe --target=$clangTarget"
     $env:CFLAGS = "$($script:CFlags) -I$($script:ConfigData.OutputPath -replace '([A-Fa-f]):','/$1' -replace '\\','/')/include"
     $env:CXXFLAGS = "$($script:CxxFlags) -I$($script:ConfigData.OutputPath -replace '([A-Fa-f]):','/$1' -replace '\\','/')/include"
     $env:PKG_CONFIG_LIBDIR = "$($script:ConfigData.OutputPath -replace '([A-Fa-f]):','/$1' -replace '\\','/')/lib/pkgconfig"
     $env:LDFLAGS = "-LIBPATH:$($script:ConfigData.OutputPath -replace '([A-Fa-f]):','/$1' -replace '\\','/')/lib"
-    $env:PATH = "$($script:WorkRoot -replace '([A-Fa-f]):','/$1' -replace '\\','/')/gas-preprocessor;${Env:PATH})"
+    $env:PATH = "$($script:WorkRoot -replace '([A-Fa-f]):','/$1' -replace '\\','/')/gas-preprocessor;$env:PATH"
     $env:MSYS2_PATH_TYPE = 'inherit'
     Invoke-DevShell @Params
     $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
     ($(Get-Content build_${Target}\config.h) -replace '[^\x20-\x7D]+', '') | Set-Content -Path build_${Target}\config.h
 }
+
 
 function Build {
     Log-Information "Build (${Target})"
@@ -145,7 +166,7 @@ function Build {
     }
     $env:MSYS2_PATH_TYPE = 'inherit'
     $env:VERBOSE = $(if ( $VerbosePreference -eq 'Continue' ) { '1' })
-    $env:PATH = "$($script:WorkRoot -replace '([A-Fa-f]):','/$1' -replace '\\','/')/gas-preprocessor;${Env:PATH})"
+    $env:PATH = "$($script:WorkRoot -replace '([A-Fa-f]):','/$1' -replace '\\','/')/gas-preprocessor;$env:PATH"
     Invoke-DevShell @Params
     $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
 }

@@ -1,10 +1,15 @@
 param(
     [string] $Name = 'svt-av1',
-    [string] $Version = '4.0.1',
+    [string] $Version = 'b486d839',
     [string] $Uri = 'https://gitlab.com/AOMediaCodec/SVT-AV1.git',
-    [string] $Hash = '4ae9272b588a05ee6e77a43e8dfdac05f54c4ff0',
+    [string] $Hash = 'b486d839ac13c1ed8a616aaccefd78ed295f4f3b',
     [array] $Targets = @('x64'),
-    [array] $Patches = @()
+    [array] $Patches = @(
+        @{
+            PatchFile = "${PSScriptRoot}/patches/svt-av1/0001-fix-preset-8-and-higher.patch"
+            HashSum = "6c0708218c75e88b4557460f06dba998fc5eaf75fbff767c8799227f1f4cbf68"
+        }
+    )
 )
 
 function Setup {
