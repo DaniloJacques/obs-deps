@@ -1,4 +1,5 @@
 param(
+    # Bumping hash to invalidate legacy MSVC cache
     [string] $Name = 'qt6',
     [string] $Version = '6.8.3',
     [string] $Uri = 'https://download.qt.io/archive/qt/6.8/6.8.3',

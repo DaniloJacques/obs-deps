@@ -47,7 +47,6 @@ function Configure {
     $ClangFlags = "/clang:-O3 $ClangTargetString".Trim()
     $Options = @(
         $CmakeOptions
-        '-T', 'ClangCL'
         "-DBUILD_SHARED_LIBS:BOOL=$($OnOff[$script:Shared.isPresent])"
         '-DBUILD_APPS:BOOL=OFF'
         '-DBUILD_DEC:BOOL=ON'
