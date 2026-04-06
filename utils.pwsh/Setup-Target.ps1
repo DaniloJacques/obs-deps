@@ -113,23 +113,27 @@ function Setup-BuildParameters {
         }
     }
 
+    $ClangTargets = @{
+        x64 = 'x86_64-pc-windows-msvc'
+        x86 = 'i686-pc-windows-msvc'
+        arm64 = 'aarch64-pc-windows-msvc'
+    }
+
     $script:CmakeOptions = @(
-        '-A', $script:ConfigData.CmakeArch
-        '-G', $VisualStudioId
+        '-G', 'Ninja'
+        "-DCMAKE_C_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
+        "-DCMAKE_CXX_COMPILER=C:/PROGRA~1/LLVM/bin/clang-cl.exe"
+        "-DCMAKE_C_COMPILER_TARGET=$($ClangTargets[$script:Target])"
+        "-DCMAKE_CXX_COMPILER_TARGET=$($ClangTargets[$script:Target])"
         "-DCMAKE_INSTALL_PREFIX=$($script:ConfigData.OutputPath)"
         "-DCMAKE_PREFIX_PATH=$($script:ConfigData.OutputPath)"
         "-DCMAKE_IGNORE_PREFIX_PATH=C:\Strawberry\c"
+        "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded$<$<CONFIG:Debug>:Debug>"
         "-DCMAKE_BUILD_TYPE=${script:Configuration}"
         '--no-warn-unused-cli'
     )
 
-    $script:CMakePostfix = @(
-        '--'
-        '/consoleLoggerParameters:Summary'
-        '/noLogo'
-        '/p:UseMultiToolTask=true'
-        '/p:EnforceProcessCountAcrossBuilds=true'
-    )
+    $script:CMakePostfix = @()
 
     if ( $script:Quiet ) {
         $script:CmakeOptions += @(
