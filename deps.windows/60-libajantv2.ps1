@@ -4,11 +4,27 @@ param(
     [string] $Uri = 'https://github.com/aja-video/libajantv2.git',
     [string] $Hash = 'b6acce6b135c3d9ae7a2bce966180b159ced619f',
     [array] $Targets = @('x64'),
-    [switch] $ForceStatic = $true
+    [switch] $ForceStatic = $true,
+    [array] $Patches = @(
+        @{
+            PatchFile = "${PSScriptRoot}/patches/ajantv2/0001-fix-clang-udiv128.patch"
+            HashSum = 'd0da84b7eada0042215c5943ce8c9e2e2cb8f3582dcb0bb4b16892b4c03697dc'
+        }
+    )
 )
 
 function Setup {
     Setup-Dependency -Uri $Uri -Hash $Hash -DestinationPath $Path
+}
+
+function Patch {
+    Log-Information "Patch (${Target})"
+    Set-Location $Path
+
+    $Patches | ForEach-Object {
+        $Params = $_
+        Safe-Patch @Params
+    }
 }
 
 function Clean {
