@@ -355,7 +355,7 @@ jobs:
         config: [RelWithDebInfo, Debug]
         include:
           - target: x64
-            runner-os: windows-2025-vs2026
+            runner-os: windows-2022
           - target: arm64
             runner-os: windows-11-arm
     runs-on: ${{ matrix.runner-os }}

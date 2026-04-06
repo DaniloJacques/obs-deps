@@ -8,15 +8,15 @@ param(
     [array] $Patches = @(
         @{
             PatchFile = "${PSScriptRoot}/patches/srt/0002-update-mbedtls-discovery-windows.patch"
-            HashSum = "c6b236a15e36767cc516c626c410be42b9ff05bd42338c194e1cf6247e4cbdc5"
+            HashSum = "8fa5fa45ce83371a31d1235f36a0215afe5f70676527c5b77032974f14ff5a38"
         },
         @{
             PatchFile = "${PSScriptRoot}/patches/srt/0003-fix-mbedtls-v3.5.0-plus-build-error-on-windows.patch"
-            HashSum = "7253ecfc1a36b1ff88dcb995ab8779107a5c7f979fd1f74390354a91fdf9f00b"
+            HashSum = "ba871894fc21a50aa70d8b288b6d77bb59260f4191e184d790ed929f1695b436"
         },
         @{
             PatchFile = "${PSScriptRoot}/patches/srt/0004-fix-link-bcrypt-on-windows-when-mbedtls-v3.5.0-plus.patch"
-            HashSum = "04a3c5be7402995328da91c2313aa0489c3d9501410361e406db8fff679d4054"
+            HashSum = "1352dde39960d4c5f1c5c73873207177d2a07007d580b8999085a425f0759d5e"
         }
     )
 )
