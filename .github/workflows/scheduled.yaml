@@ -2,8 +2,8 @@ name: Scheduled
 run-name: Scheduled Repository Actions ⏰
 on:
   workflow_dispatch:
-#  schedule:
-#    - cron: 12 0 * * *
+  schedule:
+    - cron: 12 0 * * *
 permissions:
   contents: write
 concurrency:
@@ -22,38 +22,24 @@ jobs:
         run: |
           : Remove Stale Cache Entries
 
-          echo '::group::Processing master branch cache entries'
-          while IFS=";" read -r cache_id cache_name; do
-            if [[ "${cache_name}" ]]; then
-              result=true
-              gh api -X DELETE repos/${GITHUB_REPOSITORY}/actions/caches?key=${cache_name} --jq '.total_count' &> /dev/null || result=false
+          for branch in master uranite-fork; do
+            echo "::group::Processing ${branch} branch cache entries"
+            while IFS=";" read -r cache_id cache_name; do
+              if [[ "${cache_name}" ]]; then
+                result=true
+                gh api -X DELETE repos/${GITHUB_REPOSITORY}/actions/caches?key=${cache_name} --jq '.total_count' &> /dev/null || result=false
 
-              if ${result}; then
-                echo "Deleted cache entry ${cache_name}"
-              else
-                echo "::warning::Unable to delete cache entry ${cache_name}"
+                if ${result}; then
+                  echo "Deleted cache entry ${cache_name}"
+                else
+                  echo "::warning::Unable to delete cache entry ${cache_name}"
+                fi
               fi
-            fi
-          done <<< \
-          "$(gh api repos/${GITHUB_REPOSITORY}/actions/caches \
-            --jq '.actions_caches.[] | select(.ref|test("refs/heads/master")) | select(.key|test(".*-ccache-*")) | {id, key} | join(";")')"
-
-
-          while IFS=";" read -r cache_id cache_name; do
-            if [[ "${cache_name}" ]]; then
-              result=true
-              gh api -X DELETE repos/${GITHUB_REPOSITORY}/actions/caches?key=${cache_name} --jq '.total_count' &> /dev/null || result=false
-
-              if ${result}; then
-                echo "Deleted cache entry ${cache_name}"
-              else
-                echo "::warning::Unable to delete cache entry ${cache_name}"
-              fi
-            fi
-          done <<< \
-          "$(gh api repos/${GITHUB_REPOSITORY}/actions/caches \
-            --jq '.actions_caches.[] | select(.ref|test("refs/heads/master")) | select(.key|test(".+-(qt6|ffmpeg|deps)-.+")) | {id, key} | join(";")')"
-          echo '::endgroup::'
+            done <<< \
+            "$(gh api repos/${GITHUB_REPOSITORY}/actions/caches \
+              --jq ".actions_caches.[] | select(.ref|test(\"refs/heads/${branch}\")) | select(.key|test(\".+-(qt6|ffmpeg|deps)-.+\")) | {id, key} | join(\";\")")"
+            echo '::endgroup::'
+          done
 
           echo '::group::Processing pull request cache entries'
           while IFS=";" read -r cache_id cache_name cache_ref; do
@@ -70,319 +56,6 @@ jobs:
               fi
             fi
           done <<< \
-            "$(gh api 'repos/${GITHUB_REPOSITORY}/actions/caches?per_page=100' \
-              --jq '.actions_caches.[] | select(.ref|test("refs/heads/master")|not) | {id, key, ref} | join(";")' &> /dev/null)"
+          "$(gh api repos/${GITHUB_REPOSITORY}/actions/caches \
+            --jq '.actions_caches.[] | select(.ref|test("refs/pull")) | {id, key, ref} | join(";")')"
           echo '::endgroup::'
-
-  ffmpeg-macos-build:
-    name: Build FFmpeg for macOS
-    runs-on: macos-15
-    needs: cache-cleanup
-    strategy:
-      fail-fast: true
-      matrix:
-        target: [macos-arm64, macos-x86_64]
-        include:
-          - target: macos-arm64
-            config: Release
-            type: static
-          - target: macos-x86_64
-            config: Release
-            type: static
-    defaults:
-      run:
-        shell: zsh --no-rcs --errexit --pipefail {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Environment
-        id: setup
-        run: |
-          : Setup Environment
-          print '::group::Enable Xcode 16.1'
-          sudo xcode-select --switch /Applications/Xcode_16.1.0.app/Contents/Developer
-          print '::endgroup::'
-
-          local -a unwanted_formulas=(llvm gcc postgresql openjdk sox libsndfile flac libvorbis opusfile \
-            libogg composer php gd freetype fontconfig webp libpng lame libtiff opus kotlin \
-            sbt libxft libxcb pkg-config@0.29.2)
-
-          local -a remove_formulas=()
-          for formula (${unwanted_formulas}) {
-            if [[ -d ${HOMEBREW_PREFIX}/Cellar/${formula} ]] remove_formulas+=(${formula})
-          }
-
-          if (( #remove_formulas )) brew uninstall --ignore-dependencies ${remove_formulas}
-
-          local -r date_string=$(date +"%Y-%m-%d")
-          print "ccacheDate=${date_string}" >> $GITHUB_OUTPUT
-
-      - name: Restore Compilation Cache
-        id: ccache-cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ github.workspace }}/.ccache
-          key: ${{ matrix.target }}-ccache-ffmpeg-${{ steps.setup.outputs.ccacheDate }}
-          restore-keys: |
-            ${{ matrix.target }}-ccache-ffmpeg-
-
-      - name: Build FFmpeg
-        uses: ./.github/actions/build-ffmpeg
-        with:
-          target: ${{ matrix.target }}
-          type: ${{ matrix.type }}
-          config: ${{ matrix.config }}
-
-  ffmpeg-windows-build:
-    name: Build FFmpeg for Windows
-    runs-on: windows-2025-vs2026
-    needs: cache-cleanup
-    strategy:
-      fail-fast: true
-      matrix:
-        target: [x64, arm64]
-        include:
-          - target: x64
-            config: Release
-            type: static
-          - target: arm64
-            config: Release
-            type: static
-
-    defaults:
-      run:
-        shell: pwsh
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Build FFmpeg
-        uses: ./.github/actions/build-ffmpeg
-        with:
-          target: ${{ matrix.target }}
-          type: ${{ matrix.type }}
-          config: ${{ matrix.config }}
-
-  macos-build:
-    name: Build macOS Dependencies
-    runs-on: macos-15
-    needs: cache-cleanup
-    strategy:
-      fail-fast: true
-      matrix:
-        target: [macos-arm64, macos-x86_64]
-        include:
-          - target: macos-arm64
-            config: Release
-            type: static
-          - target: macos-x86_64
-            config: Release
-            type: static
-    defaults:
-      run:
-        shell: zsh --no-rcs --errexit --pipefail {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Environment
-        id: setup
-        run: |
-          : Setup Environment
-          print '::group::Enable Xcode 16.1'
-          sudo xcode-select --switch /Applications/Xcode_16.1.0.app/Contents/Developer
-          print '::endgroup::'
-
-          local -a unwanted_formulas=(llvm gcc pkg-config@0.29.2)
-
-          local -a remove_formulas=()
-          for formula (${unwanted_formulas}) {
-            if [[ -d ${HOMEBREW_PREFIX}/Cellar/${formula} ]] remove_formulas+=(${formula})
-          }
-
-          if (( #remove_formulas )) brew uninstall --ignore-dependencies ${remove_formulas}
-
-          local -r date_string=$(date +"%Y-%m-%d")
-          print "ccacheDate=${date_string}" >> $GITHUB_OUTPUT
-
-      - name: Restore Compilation Cache
-        id: ccache-cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ github.workspace }}/.ccache
-          key: ${{ matrix.target }}-ccache-deps-${{ matrix.config }}-${{ steps.setup.outputs.ccacheDate }}
-          restore-keys: |
-            ${{ matrix.target }}-ccache-deps-${{ matrix.config }}-
-
-      - name: Build macOS Dependencies
-        uses: ./.github/actions/build-deps
-        with:
-          target: ${{ matrix.target }}
-          type: ${{ matrix.type }}
-          config: ${{ matrix.config }}
-
-  windows-build:
-    name: Build Windows Dependencies
-    runs-on: windows-2025-vs2026
-    needs: cache-cleanup
-    strategy:
-      fail-fast: true
-      matrix:
-        target: [x64, x86, arm64]
-        include:
-          - target: x64
-            config: Release
-            type: static
-          - target: x86
-            config: Release
-            type: static
-          - target: arm64
-            config: Release
-            type: static
-    defaults:
-      run:
-        shell: pwsh
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Build libajantv2 Debug
-        if: matrix.target == 'x64'
-        shell: pwsh
-        run: |
-          # Build libajantv2 Debug
-
-          $Params = @{
-            Target = '${{ matrix.target }}'
-            Configuration = 'Debug'
-            Dependencies = 'libajantv2'
-          }
-
-          ./Build-Dependencies.ps1 @Params
-          Remove-Item -Recurse -Force ${{ github.workspace }}/windows_build_temp
-
-      - name: Build VPL Debug
-        if: matrix.target == 'x64'
-        shell: pwsh
-        run: |
-          # Build VPL Debug
-
-          $Params = @{
-            Target = '${{ matrix.target }}'
-            Configuration = 'Debug'
-            Dependencies = 'vpl'
-          }
-
-          ./Build-Dependencies.ps1 @Params
-          Remove-Item -Recurse -Force ${{ github.workspace }}/windows_build_temp
-
-      - name: Build qrcodegencpp Debug
-        if: matrix.target == 'x64' || matrix.target == 'arm64'
-        shell: pwsh
-        run: |
-          # Build qrcodegencpp Debug
-
-          $Params = @{
-            Target = '${{ matrix.target }}'
-            Configuration = 'Debug'
-            Dependencies = 'qrcodegencpp'
-          }
-
-          ./Build-Dependencies.ps1 @Params
-          Remove-Item -Recurse -Force ${{ github.workspace }}/windows_build_temp
-
-      - name: Build Windows Dependencies
-        uses: ./.github/actions/build-deps
-        with:
-          target: ${{ matrix.target }}
-          type: ${{ matrix.type }}
-          config: ${{ matrix.config }}
-
-  macos-qt6-build:
-    name: Build Qt6 (macOS)
-    runs-on: macos-15
-    needs: cache-cleanup
-    defaults:
-      run:
-        shell: zsh --no-rcs --errexit --pipefail {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Environment
-        id: setup
-        run: |
-          : Setup Environment
-          print '::group::Enable Xcode 16.1'
-          sudo xcode-select --switch /Applications/Xcode_16.1.0.app/Contents/Developer
-          print '::endgroup::'
-
-          local -a unwanted_formulas=(llvm gcc pkg-config)
-
-          local -a remove_formulas=()
-          for formula (${unwanted_formulas}) {
-            if [[ -d ${HOMEBREW_PREFIX}/Cellar/${formula} ]] remove_formulas+=(${formula})
-          }
-
-          if (( #remove_formulas )) brew uninstall --ignore-dependencies ${remove_formulas}
-
-          local -r date_string=$(date +"%Y-%m-%d")
-          print "ccacheDate=${date_string}" >> $GITHUB_OUTPUT
-
-      - name: Restore Compilation Cache
-        id: ccache-cache
-        uses: actions/cache@v5
-        with:
-          path: ${{ github.workspace }}/.ccache
-          key: macos-universal-ccache-qt6-${{ steps.setup.outputs.ccacheDate }}
-          restore-keys: |
-            macos-universal-ccache-qt6-
-
-      - name: Build macOS Qt
-        uses: ./.github/actions/build-qt
-        with:
-          target: macos-universal
-          config: Release
-
-  windows-qt6-build:
-    name: Build Qt6 (Windows)
-    needs: cache-cleanup
-    strategy:
-      fail-fast: true
-      matrix:
-        target: [x64, arm64]
-        config: [RelWithDebInfo, Debug]
-        include:
-          - target: x64
-            runner-os: windows-2025-vs2026
-          - target: arm64
-            runner-os: windows-11-arm
-    runs-on: ${{ matrix.runner-os }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Environment
-        id: setup
-        run: |
-          # Setup Environment
-          $ArtifactName="qt6-windows-${{ matrix.target }}-${{ matrix.config }}-nightly"
-          $FileName="windows-deps-qt6-$(Get-Date -Format 'yyyy-MM-dd')-${{ matrix.target }}-${{ matrix.config }}.zip"
-
-          "artifactName=${ArtifactName}" >> $env:GITHUB_OUTPUT
-          "artifactFileName=${FileName}" >> $env:GITHUB_OUTPUT
-
-      - name: Build Windows Qt
-        uses: ./.github/actions/build-qt
-        with:
-          target: ${{ matrix.target }}
-          config: ${{ matrix.config }}
-
-      - name: Publish Build Artifacts
-        if: matrix.target == 'x64'
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ steps.setup.outputs.artifactName }}
-          path: ${{ github.workspace }}/windows/${{ steps.setup.outputs.artifactFileName }}

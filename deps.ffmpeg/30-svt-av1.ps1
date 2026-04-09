@@ -47,10 +47,21 @@ function Configure {
     Set-Location $Path
 
     $OnOff = @('OFF', 'ON')
+    $ClangTargetString = if ($script:ClangTargetFlags) { ($script:ClangTargetFlags -split ' ' | ForEach-Object { "/clang:$_" }) -join ' ' } else { '' }
+    $ClangFlags = "/clang:-O3 $ClangTargetString".Trim()
     $Options = @(
         $CmakeOptions
         "-DBUILD_SHARED_LIBS:BOOL=$($OnOff[$script:Shared.isPresent])"
         '-DBUILD_APPS:BOOL=OFF'
+        '-DBUILD_DEC:BOOL=ON'
+        '-DBUILD_ENC:BOOL=ON'
+        '-DENABLE_NASM:BOOL=ON'
+        '-DBUILD_TESTING:BOOL=OFF'
+        '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
+        '-DSVT_AV1_LTO:BOOL=ON'
+        '-DENABLE_AVX512:BOOL=ON'
+        "-DCMAKE_C_FLAGS=$ClangFlags"
+        "-DCMAKE_CXX_FLAGS=$ClangFlags"
     )
 
     Invoke-External cmake -S . -B "build_${Target}" @Options

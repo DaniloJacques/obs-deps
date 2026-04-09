@@ -5,6 +5,7 @@ param(
     [ValidateSet('dependencies', 'ffmpeg', 'qt')]
     [string] $PackageName = 'dependencies',
     [string[]] $Dependencies,
+    [string] $Profile,
     [ValidateSet('arm64', 'x64', 'x86')]
     [string] $Target,
     [switch] $Clean,
@@ -120,6 +121,8 @@ function Package-Dependencies {
 
     Log-Information "Cleanup unnecessary files"
 
+    $ProfileSuffix = if ( $script:Profile -and $script:Target -eq 'x64' ) { "-$($script:Profile)" } else { "" }
+
     switch ( $PackageName ) {
         ffmpeg {
             Get-ChildItem ./bin/* -Include '*.exe','srt-ffplay' -Exclude 'ffmpeg.exe','ffprobe.exe' | Remove-Item -Force -Recurse
@@ -128,7 +131,7 @@ function Package-Dependencies {
             Get-ChildItem ./share/* | Remove-Item -Force -Recurse
             Get-ChildItem ./bin/*.lib | Move-Item -Destination ./lib
             Get-ChildItem -Attribute Directory -Recurse -Include 'pkgconfig' | Remove-Item -Force -Recurse
-            $ArchiveFileName = "windows-ffmpeg-${CurrentDate}-${Target}.zip"
+            $ArchiveFileName = "windows-ffmpeg-${CurrentDate}-${Target}${ProfileSuffix}.zip"
         }
         dependencies {
             Get-ChildItem ./bin/*.lib | Move-Item -Destination ./lib
@@ -141,10 +144,10 @@ function Package-Dependencies {
                 Get-ChildItem ./share/cmake -Exclude 'nlohmann_json*' | Remove-Item -Recurse
             }
 
-            $ArchiveFileName = "windows-deps-${CurrentDate}-${Target}.zip"
+            $ArchiveFileName = "windows-deps-${CurrentDate}-${Target}${ProfileSuffix}.zip"
         }
         qt {
-            $ArchiveFileName = "windows-deps-qt6-${CurrentDate}-${Target}-${Configuration}.zip"
+            $ArchiveFileName = "windows-deps-qt6-${CurrentDate}-${Target}-${Configuration}${ProfileSuffix}.zip"
         }
     }
 

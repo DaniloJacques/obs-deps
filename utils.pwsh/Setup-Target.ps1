@@ -75,6 +75,37 @@ function Setup-BuildParameters {
         }
     }
 
+    # =========================================================================
+    # PROFILE REGISTRY — Architecture tuning (x64 only)
+    # =========================================================================
+    # To add a new profile (e.g. zen4):
+    #   1. Add a case below with the Clang flags
+    #   2. Add 'zen4' to the profile list in main.yaml matrix
+    #   3. Add 'x64-zen4' to the arch loop in auto-release packaging
+    # =========================================================================
+    $script:ClangTargetFlags = ''
+    if ( $script:Target -eq 'x64' ) {
+        switch ( $script:Profile ) {
+            'tigerlake' {
+                $script:ClangTargetFlags = '-march=tigerlake -mtune=tigerlake -mavx2 -mavx512f -mavx512bw -mavx512dq'
+            }
+            'zen3' {
+                $script:ClangTargetFlags = '-march=znver3 -mtune=znver3'
+            }
+            # ── Add future profiles here ──
+            # 'zen4' {
+            #     $script:ClangTargetFlags = '-march=znver4 -mtune=znver4'
+            # }
+            # 'zen5' {
+            #     $script:ClangTargetFlags = '-march=znver5 -mtune=znver5'
+            # }
+            default {
+                # Stock: x86-64-v3 baseline (any modern PC, ~2015+)
+                $script:ClangTargetFlags = '-march=x86-64-v3 -mtune=generic'
+            }
+        }
+    }
+
     $ClangTargets = @{
         x64 = 'x86_64-pc-windows-msvc'
         x86 = 'i686-pc-windows-msvc'

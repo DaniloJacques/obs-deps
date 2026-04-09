@@ -85,8 +85,9 @@ function Configure {
     }
     $env:PATH = "$((Get-Item "build_${Target}").FullName -replace '\\','/');$env:PATH"
     $env:CC = "cl"
-    $env:CFLAGS = $($($script:CFlags) + ' -wd4003')
-    $env:CXXFLAGS = $($($script:CxxFlags) + ' -wd4003')
+    $ClangExtra = if ($script:ClangTargetFlags) { ($script:ClangTargetFlags -split ' ' | ForEach-Object { "/clang:$_" }) -join ' ' } else { '' }
+    $env:CFLAGS = $($($script:CFlags) + " $ClangExtra -wd4003")
+    $env:CXXFLAGS = $($($script:CxxFlags) + " $ClangExtra -wd4003")
     $env:MSYS2_PATH_TYPE = 'inherit'
     Invoke-DevShell @Params
     $Backup.GetEnumerator() | ForEach-Object { Set-Item -Path "env:\$($_.Key)" -Value $_.Value }
