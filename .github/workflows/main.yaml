@@ -224,6 +224,7 @@ jobs:
 
   # ==========================================================================
   # Qt6 (Windows x64 only, no profiles needed — shared across all)
+  # RelWithDebInfo only — Debug hangs 6+ hours with Clang-CL linker
   # ==========================================================================
   windows-qt6-build:
     name: Build Qt6 (Windows)
@@ -233,7 +234,7 @@ jobs:
       fail-fast: true
       matrix:
         target: [x64]
-        config: [RelWithDebInfo, Debug]
+        config: [RelWithDebInfo]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -261,27 +262,6 @@ jobs:
           name: ${{ steps.setup.outputs.artifactName }}
           path: ${{ github.workspace }}/windows/${{ steps.setup.outputs.artifactFileName }}
 
-  windows-qt6-package:
-    name: Package Windows Qt6
-    runs-on: windows-2025-vs2026
-    strategy:
-      fail-fast: true
-      matrix:
-        target: [x64]
-    needs: [pre-checks, windows-qt6-build]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Create Windows Qt package
-        if: github.event_name != 'pull_request' || fromJSON(needs.pre-checks.outputs.seekingTesters)
-        uses: ./.github/actions/package-windows-qt
-        with:
-          releaseArtifact: qt6-windows-${{ matrix.target }}-RelWithDebInfo-${{ needs.pre-checks.outputs.shortHash }}
-          debugArtifact: qt6-windows-${{ matrix.target }}-Debug-${{ needs.pre-checks.outputs.shortHash }}
-          outputName: qt6-windows-${{ matrix.target }}-${{ needs.pre-checks.outputs.shortHash }}
-          pdbOutputName: qt6-windows-${{ matrix.target }}-PDBs-${{ needs.pre-checks.outputs.shortHash }}
-
   # ==========================================================================
   # Auto Release (on every push to uranite-fork)
   # ==========================================================================
@@ -289,7 +269,7 @@ jobs:
     name: Auto Release (Uranite Fork)
     runs-on: ubuntu-24.04
     if: github.event_name == 'push' && github.ref == 'refs/heads/uranite-fork'
-    needs: [ffmpeg-windows-build, windows-build, windows-qt6-package]
+    needs: [ffmpeg-windows-build, windows-build, windows-qt6-build]
     permissions:
       contents: write
     defaults:
