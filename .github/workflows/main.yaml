@@ -222,45 +222,6 @@ jobs:
           name: ${{ steps.setup.outputs.artifactName }}
           path: ${{ github.workspace }}\windows\${{ steps.setup.outputs.artifactFileName }}
 
-  # ==========================================================================
-  # Qt6 (Windows x64 only, no profiles needed — shared across all)
-  # RelWithDebInfo only — Debug hangs 6+ hours with Clang-CL linker
-  # ==========================================================================
-  windows-qt6-build:
-    name: Build Qt6 (Windows)
-    runs-on: windows-2025-vs2026
-    needs: pre-checks
-    strategy:
-      fail-fast: true
-      matrix:
-        target: [x64]
-        config: [RelWithDebInfo]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Environment
-        id: setup
-        run: |
-          # Setup Environment
-          $ArtifactName="qt6-windows-${{ matrix.target }}-${{ matrix.config }}-${{ needs.pre-checks.outputs.shortHash }}"
-          $FileName="windows-deps-qt6-$(Get-Date -Format 'yyyy-MM-dd')-${{ matrix.target }}-${{ matrix.config }}.zip"
-
-          "artifactName=${ArtifactName}" >> $env:GITHUB_OUTPUT
-          "artifactFileName=${FileName}" >> $env:GITHUB_OUTPUT
-
-      - name: Build Windows Qt
-        uses: ./.github/actions/build-qt
-        with:
-          target: ${{ matrix.target }}
-          config: ${{ matrix.config }}
-
-      - name: Publish Build Artifacts
-        if: github.event_name != 'pull_request' || fromJSON(needs.pre-checks.outputs.seekingTesters)
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ steps.setup.outputs.artifactName }}
-          path: ${{ github.workspace }}/windows/${{ steps.setup.outputs.artifactFileName }}
 
   # ==========================================================================
   # Auto Release (on every push to uranite-fork)
@@ -269,7 +230,7 @@ jobs:
     name: Auto Release (Uranite Fork)
     runs-on: ubuntu-24.04
     if: github.event_name == 'push' && github.ref == 'refs/heads/uranite-fork'
-    needs: [ffmpeg-windows-build, windows-build, windows-qt6-build]
+    needs: [ffmpeg-windows-build, windows-build]
     permissions:
       contents: write
     defaults:
@@ -293,15 +254,10 @@ jobs:
 
           # ── ARCH LOOP ── add new profiles as x64-<profile> ──
           for arch in x64-tigerlake x64-zen3 x64; do
-            if [[ "$arch" == *"x64-"* ]]; then
-               qt_search_arch="x64"
-            else
-               qt_search_arch=${arch}
-            fi
             _temp=$(mktemp -d)
             pushd "${_temp}" > /dev/null
 
-            for artifact in ${GITHUB_WORKSPACE}/**/windows-@(deps|ffmpeg)-!(qt6*)-${arch}.*; do
+            for artifact in ${GITHUB_WORKSPACE}/**/windows-@(deps|ffmpeg)-*-${arch}.*; do
               case ${artifact} in
                 *.zip) unzip -o ${artifact} > /dev/null ;;
                 *.tar.xz) XZ_OPT=-T0 tar -xJf ${artifact} ;;
@@ -314,10 +270,6 @@ jobs:
               mv windows-deps-${{ steps.metadata.outputs.version }}-${arch}.zip ${GITHUB_WORKSPACE}
             fi
 
-            files=("${GITHUB_WORKSPACE}"/qt6-windows-"${qt_search_arch}"-!(*-@(Debug|RelWithDebInfo|Release|MinSizeRel))/*.zip)
-            for artifact in "${files[@]}"; do
-              mv "${artifact}" "${GITHUB_WORKSPACE}" 2>/dev/null || true
-            done
             popd > /dev/null
           done
 
